@@ -34,7 +34,7 @@ let activeResource = resources[0];
 let toastTimer;
 
 const getSubject = (id) => subjects.find((subject) => subject.id === id);
-const getSourceUrl = (source) => encodeURIComponent(source).replaceAll("%2F", "/");
+const getSourceUrl = (source) => `./${encodeURI(source)}`;
 const escapeHtml = (text) => String(text).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 
 function showToast(message) {
@@ -58,7 +58,7 @@ function updateCounts() {
 function renderSubjects() {
   const subjectNav = document.querySelector("#subject-nav");
   subjectNav.innerHTML = subjects.map((subject) => `<button class="subject-item" data-subject="${subject.id}"><i class="subject-dot" style="background:${subject.color}"></i>${escapeHtml(subject.name)}<span>${resources.filter((item) => item.subject === subject.id).length.toString().padStart(2, "0")}</span></button>`).join("");
-  document.querySelector("#subject-tiles").innerHTML = subjects.map((subject, index) => `<button class="subject-tile" data-subject="${subject.id}" style="--tile-color:${subject.color}; --tile-accent:${index === 2 ? "#e9d79d" : subject.color};"><span class="tile-arrow">↗</span><strong>${escapeHtml(subject.name)}</strong><small>${resources.filter((item) => item.subject === subject.id).length} study resources · ${escapeHtml(subject.short)}</small></button>`).join("");
+  document.querySelector("#subject-tiles").innerHTML = subjects.map((subject, index) => `<button class="subject-tile" data-subject="${subject.id}" style="--tile-color:${subject.color}; --tile-accent:${index === 2 ? "#e9d79d" : subject.color};"><strong>${escapeHtml(subject.name)}</strong><small>${resources.filter((item) => item.subject === subject.id).length} study resources · ${escapeHtml(subject.short)}</small></button>`).join("");
 }
 
 function buildSummary(resource) {
@@ -111,7 +111,7 @@ function createResourceCard(resource, index) {
     <div class="card-top"><span class="card-subject"><i></i>${escapeHtml(subject.name)}</span><button class="card-bookmark ${isSaved ? "is-saved" : ""}" data-save-resource="${resource.id}" aria-label="${isSaved ? "Remove saved topic" : "Save topic"}" title="${isSaved ? "Remove from review deck" : "Save for review"}">${isSaved ? "◆" : "◇"}</button></div>
     <div class="card-number">${String(index + 1).padStart(2, "0")} / ${isDone ? "COMPLETED" : "STUDY NOTE"}</div>
     <h3 class="card-title">${escapeHtml(resource.title)}</h3><p class="card-description">${escapeHtml(resource.description)}</p>
-    <div class="card-foot"><span>${resource.minutes} MIN READ</span><span class="card-open">↗</span></div>
+    <div class="card-foot"><span>${resource.minutes} MIN READ</span><a class="card-file-link" href="${getSourceUrl(resource.source)}" target="_blank" rel="noopener noreferrer">Open file</a></div>
   </article>`;
 }
 
@@ -158,13 +158,13 @@ function renderReader(resource) {
     <div class="reader-overline">${escapeHtml(subject.name.toUpperCase())} &nbsp;·&nbsp; A CLEAR STUDY GUIDE</div>
     <h1>${escapeHtml(resource.title)}</h1><p class="reader-summary">${escapeHtml(resource.description)} This guide gives you a clear starting structure; use the original course material for its full explanations and lecturer-specific detail.</p>
     <div class="reader-meta"><span>${resource.minutes} MIN READ</span><i></i><span>${resource.outline.length} KEY IDEAS</span><i></i><span>${resource.cards.length} FLASHCARD${resource.cards.length === 1 ? "" : "S"}</span></div>
-    <div class="reader-controls"><button class="button button-outline" data-toggle-save="${resource.id}">${saved.has(resource.id) ? "◆ Saved to review" : "◇ Save for review"}</button><button class="button button-outline" data-open-source="${resource.id}">Open original notes ↗</button><button class="button button-dark" data-mark-complete="${resource.id}">${completed.has(resource.id) ? "✓ Completed" : "Mark complete"}</button></div>
+    <div class="reader-controls"><button class="button button-outline" data-toggle-save="${resource.id}">${saved.has(resource.id) ? "◆ Saved to review" : "◇ Save for review"}</button><a class="button button-outline" href="${getSourceUrl(resource.source)}" target="_blank" rel="noopener noreferrer">Open original notes</a><button class="button button-dark" data-mark-complete="${resource.id}">${completed.has(resource.id) ? "✓ Completed" : "Mark complete"}</button></div>
     <section class="reader-section" id="overview"><h2>Start with the big picture.</h2><p>${escapeHtml(resource.description)} Before diving into details, take a moment to identify the main idea, then look for how the smaller pieces connect.</p></section>
     <section class="reader-section" id="summary"><h2>Summary snapshot.</h2><div class="summary-box"><div class="summary-header">${escapeHtml(summary.headline)}</div><ul class="summary-points">${summary.bullets.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}</ul><p>${escapeHtml(summary.caution)}</p></div></section>
     <section class="reader-section" id="key-ideas"><h2>Key ideas to follow.</h2><p>Use these as a reading path through your original material. Pause after each one and explain it in your own words.</p><div class="learning-list">${resource.outline.map((item, index) => `<div class="learning-item"><i>${String(index + 1).padStart(2, "0")}</i><span>${escapeHtml(item)}</span></div>`).join("")}</div></section>
-    <section class="reader-section" id="flashcards"><h2>Try a quick recall.</h2><p>Tap a card to reveal the answer. Try to say it out loud before you turn it over.</p><div class="flashcard" data-flashcard="0" tabindex="0" role="button" aria-label="Reveal flashcard answer"><span class="flashcard-count">FLASHCARD 01 / ${String(resource.cards.length).padStart(2, "0")}</span><strong class="flashcard-prompt">${escapeHtml(resource.cards[0].q)}</strong><span class="flashcard-content"><span class="flashcard-hint">Tap to reveal ↗</span></span></div></section>
+    <section class="reader-section" id="flashcards"><h2>Try a quick recall.</h2><p>Tap a card to reveal the answer. Try to say it out loud before you turn it over.</p><div class="flashcard" data-flashcard="0" tabindex="0" role="button" aria-label="Reveal flashcard answer"><span class="flashcard-count">FLASHCARD 01 / ${String(resource.cards.length).padStart(2, "0")}</span><strong class="flashcard-prompt">${escapeHtml(resource.cards[0].q)}</strong><span class="flashcard-content"><span class="flashcard-hint">Tap to reveal</span></span></div></section>
     <section class="reader-section" id="check-yourself"><h2>Check your understanding.</h2><p>Choose an answer to see a little feedback.</p><div class="quiz-stack">${quickTests.map((entry, index) => `<div class="quiz-box" data-quiz="${resource.id}-${index}" data-answer="${entry.answer}" data-explain="${escapeHtml(entry.explain)}"><span class="quiz-label">QUICK TEST ${String(index + 1).padStart(2, "0")}</span><h3>${escapeHtml(entry.q)}</h3><div class="quiz-options">${entry.options.map((option, optionIndex) => `<button class="quiz-option" data-quiz-option="${optionIndex}">${escapeHtml(option)}</button>`).join("")}</div><p class="quiz-feedback" aria-live="polite"></p></div>`).join("")}</div></section>
-    <section class="reader-section" id="original"><h2>Continue with the original.</h2><div class="source-callout"><p>This study guide is a companion, not a substitute for your source material. Open the original lecture or reference to review the full diagrams, explanations, and course-specific detail.</p></div><button class="button button-dark source-open-button" data-open-source="${resource.id}">Open ${resource.source.toLowerCase().endsWith(".pdf") ? "reference book" : "lecture slides"} <span>↗</span></button></section>`;
+    <section class="reader-section" id="original"><h2>Continue with the original.</h2><div class="source-callout"><p>This study guide is a companion, not a substitute for your source material. Open the original lecture or reference to review the full diagrams, explanations, and course-specific detail.</p></div><a class="button button-dark source-open-button" href="${getSourceUrl(resource.source)}" target="_blank" rel="noopener noreferrer">Open ${resource.source.toLowerCase().endsWith(".pdf") ? "reference book" : "lecture slides"}</a></section>`;
   document.querySelector("#reader-rail").innerHTML = `<div class="reader-rail-title">IN THIS NOTE</div><div class="reader-rail-links">${[["overview", "The big picture"], ["summary", "Summary"], ["key-ideas", "Key ideas"], ["flashcards", "Flashcards"], ["check-yourself", "Quick tests"], ["original", "Original notes"]].map(([id, label]) => `<button class="rail-link" data-scroll-to="${id}">${label}</button>`).join("")}</div><div class="rail-tip"><span>✳</span><p>Try explaining one idea from memory before you move to the next.</p></div>`;
   showView("reader", resource.title);
 }
@@ -173,10 +173,10 @@ function renderReview() {
   const review = document.querySelector("#review-content");
   const savedResources = resources.filter((resource) => saved.has(resource.id));
   if (!savedResources.length) {
-    review.innerHTML = `<div class="empty-review"><span class="empty-symbol">◈</span><h2>Your review deck is ready.</h2><p>Save a topic from the library to keep it close for your next study session.</p><button class="button button-dark" data-view="library">Find something to study <span>↗</span></button></div>`;
+    review.innerHTML = `<div class="empty-review"><span class="empty-symbol">◈</span><h2>Your review deck is ready.</h2><p>Save a topic from the library to keep it close for your next study session.</p><button class="button button-dark" data-view="library">Find something to study</button></div>`;
     return;
   }
-  review.innerHTML = `<div class="review-list">${savedResources.map((resource) => `<article class="review-card" style="--tile-color:${getSubject(resource.subject).color}"><i></i><div><h3>${escapeHtml(resource.title)}</h3><p>${escapeHtml(getSubject(resource.subject).name)} · ${resource.minutes} min read ${completed.has(resource.id) ? "· Completed" : ""}</p></div><div class="review-card-actions"><button data-open-resource="${resource.id}">Study ↗</button><button data-save-resource="${resource.id}" aria-label="Remove ${escapeHtml(resource.title)}">Remove</button></div></article>`).join("")}</div>`;
+  review.innerHTML = `<div class="review-list">${savedResources.map((resource) => `<article class="review-card" style="--tile-color:${getSubject(resource.subject).color}"><i></i><div><h3>${escapeHtml(resource.title)}</h3><p>${escapeHtml(getSubject(resource.subject).name)} · ${resource.minutes} min read ${completed.has(resource.id) ? "· Completed" : ""}</p></div><div class="review-card-actions"><button data-open-resource="${resource.id}">Study</button><button data-save-resource="${resource.id}" aria-label="Remove ${escapeHtml(resource.title)}">Remove</button></div></article>`).join("")}</div>`;
 }
 
 function toggleSaved(resourceId) {
@@ -214,7 +214,7 @@ function updateContactLinks(contact) {
   whatsapp.href = phoneDigits.length >= 7 ? `https://wa.me/${phoneDigits}` : "#";
   email.hidden = !contact.email;
   email.href = contact.email ? `mailto:${encodeURIComponent(contact.email)}` : "mailto:";
-  email.textContent = contact.email ? `Write to ${contact.email} ↗` : "";
+  email.textContent = contact.email ? `Write to ${contact.email}` : "";
 }
 
 function closeContact() {
@@ -240,7 +240,7 @@ function handleClick(event) {
   const scrollButton = event.target.closest("[data-scroll-to]");
   if (scrollButton) { document.getElementById(scrollButton.dataset.scrollTo)?.scrollIntoView({ behavior: "smooth" }); return; }
   const flashcard = event.target.closest("[data-flashcard]");
-  if (flashcard) { const index = Number(flashcard.dataset.flashcard); const answer = flashcard.querySelector(".flashcard-content"); answer.innerHTML = answer.dataset.revealed === "true" ? `<span class="flashcard-hint">Tap to reveal ↗</span>` : `<span class="flashcard-answer">${escapeHtml(activeResource.cards[index].a)}</span>`; answer.dataset.revealed = answer.dataset.revealed === "true" ? "false" : "true"; return; }
+  if (flashcard) { const index = Number(flashcard.dataset.flashcard); const answer = flashcard.querySelector(".flashcard-content"); answer.innerHTML = answer.dataset.revealed === "true" ? `<span class="flashcard-hint">Tap to reveal</span>` : `<span class="flashcard-answer">${escapeHtml(activeResource.cards[index].a)}</span>`; answer.dataset.revealed = answer.dataset.revealed === "true" ? "false" : "true"; return; }
   const option = event.target.closest("[data-quiz-option]");
   if (option) { const quiz = option.closest("[data-quiz]"); const answer = Number(quiz.dataset.answer); const choice = Number(option.dataset.quizOption); quiz.querySelectorAll("[data-quiz-option]").forEach((button) => { button.disabled = true; const selected = Number(button.dataset.quizOption); if (selected === answer) button.classList.add("is-right"); else if (selected === choice) button.classList.add("is-wrong"); }); quiz.querySelector(".quiz-feedback").textContent = choice === answer ? `That's right. ${quiz.dataset.explain}` : `Not quite. ${quiz.dataset.explain}`; return; }
   if (event.target.closest("[data-close-modal]")) { closeContact(); return; }
