@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="admin.css" />
     <link rel="stylesheet" href="hero.css" />
     <script src="app.js" defer></script>
   </head>
@@ -26,6 +27,7 @@
           <button class="nav-item is-active" data-view="home"><span class="nav-icon">⌂</span>Overview<span class="nav-shortcut">01</span></button>
           <button class="nav-item" data-view="library"><span class="nav-icon">▤</span>Study library<span class="nav-count" id="nav-count">15</span></button>
           <button class="nav-item" data-view="review"><span class="nav-icon">◈</span>Review deck<span class="nav-count" id="saved-count">0</span></button>
+          <button class="nav-item" data-view="admin"><span class="nav-icon">⌑</span>Admin workspace<span class="nav-shortcut">LOCKED</span></button>
         </nav>
 
         <div class="sidebar-heading"><span>YOUR SUBJECTS</span><button id="show-all-subjects" aria-label="Show all subjects" title="Show all subjects">View</button></div>
@@ -130,6 +132,42 @@
           <div class="content-wrap">
             <div class="page-intro"><span class="section-kicker">A LITTLE PRACTICE GOES A LONG WAY</span><h1>Your <span>review deck.</span></h1><p>Saved topics and quick questions, all in one place.</p></div>
             <div id="review-content"></div>
+          </div>
+        </section>
+
+        <section class="view" id="admin-view" aria-label="Admin workspace">
+          <div class="content-wrap admin-wrap">
+            <section class="admin-gate" id="admin-gate">
+              <span class="section-kicker">PRIVATE WORKSPACE</span>
+              <h1 id="admin-gate-title">Admin <span>access.</span></h1>
+              <p id="admin-gate-copy">Set a PIN to open the editor on this browser. This local gate is not server authentication; it does not protect content from someone with browser developer tools.</p>
+              <form id="admin-access-form" class="admin-form admin-access-form">
+                <label for="admin-pin">Admin PIN <small id="admin-pin-hint">Use at least 6 characters.</small></label>
+                <input id="admin-pin" name="pin" type="password" minlength="6" autocomplete="current-password" required />
+                <button class="button button-dark" id="admin-access-submit" type="submit">Set admin PIN</button>
+                <p class="admin-status" id="admin-access-status" role="status"></p>
+              </form>
+            </section>
+            <div id="admin-workspace" hidden>
+              <div class="page-intro admin-intro"><span class="section-kicker">PRIVATE WORKSPACE</span><h1>Build your <span>study library.</span></h1><p>Create notes and sections here. They are saved in this browser only and are not published to other visitors.</p><button class="button button-outline admin-lock" id="admin-lock" type="button">Lock workspace</button></div>
+              <div class="admin-layout">
+                <form id="admin-note-form" class="admin-form admin-note-form">
+                  <span class="section-kicker">NEW LIBRARY ENTRY</span>
+                  <h2>Add a note or section.</h2>
+                  <label for="admin-note-title">Title<input id="admin-note-title" name="title" maxlength="100" required /></label>
+                  <label for="admin-note-subject">Subject<select id="admin-note-subject" name="subject" required></select></label>
+                  <label for="admin-note-description">Short introduction<input id="admin-note-description" name="description" maxlength="220" required /></label>
+                  <label for="admin-note-body">Notes and sections <small>Separate sections with a blank line.</small><textarea id="admin-note-body" name="body" rows="10" required></textarea></label>
+                  <button class="button button-dark" type="submit">Add to study library</button>
+                  <p class="admin-status" id="admin-note-status" role="status"></p>
+                </form>
+                <section class="admin-entries" aria-labelledby="admin-entries-title">
+                  <span class="section-kicker">YOUR ADDITIONS</span>
+                  <h2 id="admin-entries-title">Notes on this browser.</h2>
+                  <div id="admin-note-list"></div>
+                </section>
+              </div>
+            </div>
           </div>
         </section>
 

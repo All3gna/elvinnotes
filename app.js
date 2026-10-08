@@ -24,16 +24,20 @@ const resources = [
   { id: "mri-duplicate", title: "Musculoskeletal MRI: second copy", subject: "clinical-sciences", source: "_OceanofPDF.com_MRI_of_the_Musculoskeletal_System_-_Martin_Vahlensieck (1).pdf", minutes: 15, description: "A second copy of the musculoskeletal MRI reference in your collection.", outline: ["Compare this copy with your primary reference", "Keep the version you prefer for annotations", "Use topic and page references to return to important examples"], cards: [{ q: "How can you manage two copies of the same reference?", a: "Choose a primary copy for study, check that both open correctly, and keep notes anchored to chapter or page references." }], quiz: { q: "What is a practical way to handle duplicate reference files?", options: ["Choose a primary copy and keep references consistent", "Study both without noting which is which", "Delete one without checking"], answer: 0, explain: "A single primary copy keeps notes and page references consistent." } },
 ];
 
-const storageKeys = { saved: "elvin-school-saved-v1", completed: "elvin-school-completed-v1", contact: "elvin-school-contact-v1" };
+const storageKeys = { saved: "elvin-school-saved-v1", completed: "elvin-school-completed-v1", contact: "elvin-school-contact-v1", customNotes: "elvin-school-custom-notes-v1", adminPin: "elvin-school-admin-pin-v1" };
 const readStore = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
 let saved = new Set(readStore(storageKeys.saved, []));
 let completed = new Set(readStore(storageKeys.completed, []));
+let customNotes = readStore(storageKeys.customNotes, []);
+let adminUnlocked = false;
 let activeFilter = "all";
 let searchTerm = "";
 let activeResource = resources[0];
 let toastTimer;
 
 const getSubject = (id) => subjects.find((subject) => subject.id === id);
+const getAllResources = () => [...resources, ...customNotes];
+const findResource = (id) => getAllResources().find((resource) => resource.id === id);
 const getSourceUrl = (source) => `./${encodeURI(source)}`;
 const escapeHtml = (text) => String(text).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 
@@ -46,19 +50,20 @@ function showToast(message) {
 }
 
 function updateCounts() {
-  document.querySelector("#nav-count").textContent = resources.length;
-  document.querySelector("#stat-notes").textContent = resources.length;
+  document.querySelector("#nav-count").textContent = getAllResources().length;
+  document.querySelector("#stat-notes").textContent = getAllResources().length;
   document.querySelector("#saved-count").textContent = saved.size;
   document.querySelector("#stat-saved").textContent = `${saved.size} saved`;
-  document.querySelector("#stat-progress").textContent = `${Math.round((completed.size / resources.length) * 100)}%`;
+  document.querySelector("#stat-progress").textContent = `${Math.round((completed.size / getAllResources().length) * 100)}%`;
   localStorage.setItem(storageKeys.saved, JSON.stringify([...saved]));
   localStorage.setItem(storageKeys.completed, JSON.stringify([...completed]));
+  localStorage.setItem(storageKeys.customNotes, JSON.stringify(customNotes));
 }
 
 function renderSubjects() {
   const subjectNav = document.querySelector("#subject-nav");
-  subjectNav.innerHTML = subjects.map((subject) => `<button class="subject-item" data-subject="${subject.id}"><i class="subject-dot" style="background:${subject.color}"></i>${escapeHtml(subject.name)}<span>${resources.filter((item) => item.subject === subject.id).length.toString().padStart(2, "0")}</span></button>`).join("");
-  document.querySelector("#subject-tiles").innerHTML = subjects.map((subject, index) => `<button class="subject-tile" data-subject="${subject.id}" style="--tile-color:${subject.color}; --tile-accent:${index === 2 ? "#e9d79d" : subject.color};"><strong>${escapeHtml(subject.name)}</strong><small>${resources.filter((item) => item.subject === subject.id).length} study resources · ${escapeHtml(subject.short)}</small></button>`).join("");
+  subjectNav.innerHTML = subjects.map((subject) => `<button class="subject-item" data-subject="${subject.id}"><i class="subject-dot" style="background:${subject.color}"></i>${escapeHtml(subject.name)}<span>${getAllResources().filter((item) => item.subject === subject.id).length.toString().padStart(2, "0")}</span></button>`).join("");
+  document.querySelector("#subject-tiles").innerHTML = subjects.map((subject, index) => `<button class="subject-tile" data-subject="${subject.id}" style="--tile-color:${subject.color}; --tile-accent:${index === 2 ? "#e9d79d" : subject.color};"><strong>${escapeHtml(subject.name)}</strong><small>${getAllResources().filter((item) => item.subject === subject.id).length} study resources · ${escapeHtml(subject.short)}</small></button>`).join("");
 }
 
 function buildSummary(resource) {
@@ -111,7 +116,7 @@ function createResourceCard(resource, index) {
     <div class="card-top"><span class="card-subject"><i></i>${escapeHtml(subject.name)}</span><button class="card-bookmark ${isSaved ? "is-saved" : ""}" data-save-resource="${resource.id}" aria-label="${isSaved ? "Remove saved topic" : "Save topic"}" title="${isSaved ? "Remove from review deck" : "Save for review"}">${isSaved ? "◆" : "◇"}</button></div>
     <div class="card-number">${String(index + 1).padStart(2, "0")} / ${isDone ? "COMPLETED" : "STUDY NOTE"}</div>
     <h3 class="card-title">${escapeHtml(resource.title)}</h3><p class="card-description">${escapeHtml(resource.description)}</p>
-    <div class="card-foot"><span>${resource.minutes} MIN READ</span><a class="card-file-link" href="${getSourceUrl(resource.source)}" target="_blank" rel="noopener noreferrer">Open file</a></div>
+    <div class="card-foot"><span>${resource.custom ? "APP NOTE" : `${resource.minutes} MIN READ`}</span>${resource.custom ? "<span class=\"card-file-link\">Open note</span>" : `<a class="card-file-link" href="${getSourceUrl(resource.source)}" target="_blank" rel="noopener noreferrer">Open file</a>`}</div>
   </article>`;
 }
 
@@ -123,8 +128,8 @@ function matchesResource(resource) {
 }
 
 function renderLibrary() {
-  const filtered = resources.filter(matchesResource);
-  document.querySelector("#library-grid").innerHTML = filtered.map((resource) => createResourceCard(resource, resources.indexOf(resource))).join("");
+  const filtered = getAllResources().filter(matchesResource);
+  document.querySelector("#library-grid").innerHTML = filtered.map((resource) => createResourceCard(resource, getAllResources().indexOf(resource))).join("");
   document.querySelector("#results-count").textContent = `${filtered.length} ${filtered.length === 1 ? "RESOURCE" : "RESOURCES"}`;
   document.querySelector("#empty-state").hidden = filtered.length > 0;
 }
@@ -140,9 +145,10 @@ function renderFilters() {
 }
 
 function showView(viewName, label) {
+  if (viewName === "admin") renderAdminGate();
   document.querySelectorAll(".view").forEach((view) => view.classList.toggle("is-visible", view.id === `${viewName}-view`));
   document.querySelectorAll(".nav-item").forEach((button) => button.classList.toggle("is-active", button.dataset.view === viewName || (viewName === "reader" && button.dataset.view === "library")));
-  document.querySelector("#breadcrumb-current").textContent = label || ({ home: "Overview", library: "Study library", reader: activeResource.title, review: "Review deck", about: "About Elvin School" }[viewName]);
+  document.querySelector("#breadcrumb-current").textContent = label || ({ home: "Overview", library: "Study library", reader: activeResource.title, review: "Review deck", admin: "Admin workspace", about: "About Elvin School" }[viewName]);
   document.querySelector("#sidebar").classList.remove("is-open");
   window.scrollTo({ top: 0, behavior: "smooth" });
   if (viewName === "review") renderReview();
@@ -153,25 +159,25 @@ function renderReader(resource) {
   const subject = getSubject(resource.subject);
   const summary = buildSummary(resource);
   const quickTests = buildQuickTests(resource);
-  document.querySelector("#reader-source").textContent = `SOURCE  /  ${resource.source}`;
+  document.querySelector("#reader-source").textContent = resource.custom ? "CREATED IN ADMIN WORKSPACE" : `SOURCE  /  ${resource.source}`;
   document.querySelector("#reader-article").innerHTML = `
     <div class="reader-overline">${escapeHtml(subject.name.toUpperCase())} &nbsp;·&nbsp; A CLEAR STUDY GUIDE</div>
     <h1>${escapeHtml(resource.title)}</h1><p class="reader-summary">${escapeHtml(resource.description)} This guide gives you a clear starting structure; use the original course material for its full explanations and lecturer-specific detail.</p>
     <div class="reader-meta"><span>${resource.minutes} MIN READ</span><i></i><span>${resource.outline.length} KEY IDEAS</span><i></i><span>${resource.cards.length} FLASHCARD${resource.cards.length === 1 ? "" : "S"}</span></div>
-    <div class="reader-controls"><button class="button button-outline" data-toggle-save="${resource.id}">${saved.has(resource.id) ? "◆ Saved to review" : "◇ Save for review"}</button><a class="button button-outline" href="${getSourceUrl(resource.source)}" target="_blank" rel="noopener noreferrer">Open original notes</a><button class="button button-dark" data-mark-complete="${resource.id}">${completed.has(resource.id) ? "✓ Completed" : "Mark complete"}</button></div>
+    <div class="reader-controls"><button class="button button-outline" data-toggle-save="${resource.id}">${saved.has(resource.id) ? "◆ Saved to review" : "◇ Save for review"}</button>${resource.custom ? "" : `<a class="button button-outline" href="${getSourceUrl(resource.source)}" target="_blank" rel="noopener noreferrer">Open original notes</a>`}<button class="button button-dark" data-mark-complete="${resource.id}">${completed.has(resource.id) ? "✓ Completed" : "Mark complete"}</button></div>
     <section class="reader-section" id="overview"><h2>Start with the big picture.</h2><p>${escapeHtml(resource.description)} Before diving into details, take a moment to identify the main idea, then look for how the smaller pieces connect.</p></section>
     <section class="reader-section" id="summary"><h2>Summary snapshot.</h2><div class="summary-box"><div class="summary-header">${escapeHtml(summary.headline)}</div><ul class="summary-points">${summary.bullets.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}</ul><p>${escapeHtml(summary.caution)}</p></div></section>
     <section class="reader-section" id="key-ideas"><h2>Key ideas to follow.</h2><p>Use these as a reading path through your original material. Pause after each one and explain it in your own words.</p><div class="learning-list">${resource.outline.map((item, index) => `<div class="learning-item"><i>${String(index + 1).padStart(2, "0")}</i><span>${escapeHtml(item)}</span></div>`).join("")}</div></section>
     <section class="reader-section" id="flashcards"><h2>Try a quick recall.</h2><p>Tap a card to reveal the answer. Try to say it out loud before you turn it over.</p><div class="flashcard" data-flashcard="0" tabindex="0" role="button" aria-label="Reveal flashcard answer"><span class="flashcard-count">FLASHCARD 01 / ${String(resource.cards.length).padStart(2, "0")}</span><strong class="flashcard-prompt">${escapeHtml(resource.cards[0].q)}</strong><span class="flashcard-content"><span class="flashcard-hint">Tap to reveal</span></span></div></section>
     <section class="reader-section" id="check-yourself"><h2>Check your understanding.</h2><p>Choose an answer to see a little feedback.</p><div class="quiz-stack">${quickTests.map((entry, index) => `<div class="quiz-box" data-quiz="${resource.id}-${index}" data-answer="${entry.answer}" data-explain="${escapeHtml(entry.explain)}"><span class="quiz-label">QUICK TEST ${String(index + 1).padStart(2, "0")}</span><h3>${escapeHtml(entry.q)}</h3><div class="quiz-options">${entry.options.map((option, optionIndex) => `<button class="quiz-option" data-quiz-option="${optionIndex}">${escapeHtml(option)}</button>`).join("")}</div><p class="quiz-feedback" aria-live="polite"></p></div>`).join("")}</div></section>
-    <section class="reader-section" id="original"><h2>Continue with the original.</h2><div class="source-callout"><p>This study guide is a companion, not a substitute for your source material. Open the original lecture or reference to review the full diagrams, explanations, and course-specific detail.</p></div><a class="button button-dark source-open-button" href="${getSourceUrl(resource.source)}" target="_blank" rel="noopener noreferrer">Open ${resource.source.toLowerCase().endsWith(".pdf") ? "reference book" : "lecture slides"}</a></section>`;
+    ${resource.custom ? `<section class="reader-section" id="original"><h2>Your notes and sections.</h2>${resource.body.split(/\n\s*\n/).map((part) => `<p>${escapeHtml(part).replace(/\n/g, "<br>")}</p>`).join("")}</section>` : `<section class="reader-section" id="original"><h2>Continue with the original.</h2><div class="source-callout"><p>This study guide is a companion, not a substitute for your source material. Open the original lecture or reference to review the full diagrams, explanations, and course-specific detail.</p></div><a class="button button-dark source-open-button" href="${getSourceUrl(resource.source)}" target="_blank" rel="noopener noreferrer">Open ${resource.source.toLowerCase().endsWith(".pdf") ? "reference book" : "lecture slides"}</a></section>`}`;
   document.querySelector("#reader-rail").innerHTML = `<div class="reader-rail-title">IN THIS NOTE</div><div class="reader-rail-links">${[["overview", "The big picture"], ["summary", "Summary"], ["key-ideas", "Key ideas"], ["flashcards", "Flashcards"], ["check-yourself", "Quick tests"], ["original", "Original notes"]].map(([id, label]) => `<button class="rail-link" data-scroll-to="${id}">${label}</button>`).join("")}</div><div class="rail-tip"><span>✳</span><p>Try explaining one idea from memory before you move to the next.</p></div>`;
   showView("reader", resource.title);
 }
 
 function renderReview() {
   const review = document.querySelector("#review-content");
-  const savedResources = resources.filter((resource) => saved.has(resource.id));
+  const savedResources = getAllResources().filter((resource) => saved.has(resource.id));
   if (!savedResources.length) {
     review.innerHTML = `<div class="empty-review"><span class="empty-symbol">◈</span><h2>Your review deck is ready.</h2><p>Save a topic from the library to keep it close for your next study session.</p><button class="button button-dark" data-view="library">Find something to study</button></div>`;
     return;
@@ -188,9 +194,33 @@ function toggleSaved(resourceId) {
 }
 
 function openSource(resourceId) {
-  const resource = resources.find((item) => item.id === resourceId);
-  if (!resource) return;
+  const resource = findResource(resourceId);
+  if (!resource || resource.custom) return;
   window.open(getSourceUrl(resource.source), "_blank", "noopener,noreferrer");
+}
+
+function renderAdminGate() {
+  const hasPin = Boolean(localStorage.getItem(storageKeys.adminPin));
+  document.querySelector("#admin-gate").hidden = adminUnlocked;
+  document.querySelector("#admin-workspace").hidden = !adminUnlocked;
+  document.querySelector("#admin-gate-title").innerHTML = hasPin ? "Admin <span>access.</span>" : "Set up <span>admin access.</span>";
+  document.querySelector("#admin-gate-copy").textContent = "This PIN only gates the editor in this browser. GitHub Pages has no server-side accounts, so this is not strong security and does not protect data from someone using developer tools.";
+  document.querySelector("#admin-access-submit").textContent = hasPin ? "Unlock workspace" : "Set admin PIN";
+  document.querySelector("#admin-pin").autocomplete = hasPin ? "current-password" : "new-password";
+  document.querySelector("#admin-pin-hint").textContent = hasPin ? "Enter your browser's admin PIN." : "Use at least 6 characters. Choose a PIN you can remember.";
+  if (adminUnlocked) renderAdminWorkspace();
+}
+
+function renderAdminWorkspace() {
+  const subjectSelect = document.querySelector("#admin-note-subject");
+  subjectSelect.innerHTML = subjects.map((subject) => `<option value="${subject.id}">${escapeHtml(subject.name)}</option>`).join("");
+  const noteList = document.querySelector("#admin-note-list");
+  noteList.innerHTML = customNotes.length ? customNotes.map((note) => `<article class="admin-entry"><div><span>${escapeHtml(getSubject(note.subject).name)}</span><h3>${escapeHtml(note.title)}</h3><p>${escapeHtml(note.description)}</p></div><button class="admin-delete" type="button" data-delete-note="${note.id}" aria-label="Delete ${escapeHtml(note.title)}">Delete</button></article>`).join("") : `<p class="admin-empty">Your browser-local notes will appear here.</p>`;
+}
+
+async function hashAdminPin(pin) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pin));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 function openContact() {
@@ -232,11 +262,11 @@ function handleClick(event) {
   const saveButton = event.target.closest("[data-save-resource], [data-toggle-save]");
   if (saveButton) { event.stopPropagation(); toggleSaved(saveButton.dataset.saveResource || saveButton.dataset.toggleSave); return; }
   const markButton = event.target.closest("[data-mark-complete]");
-  if (markButton) { const id = markButton.dataset.markComplete; completed.has(id) ? completed.delete(id) : completed.add(id); updateCounts(); renderFeatured(); renderLibrary(); renderReader(resources.find((resource) => resource.id === id)); showToast(completed.has(id) ? "Nice work. Topic marked complete." : "Completion status updated."); return; }
+  if (markButton) { const id = markButton.dataset.markComplete; completed.has(id) ? completed.delete(id) : completed.add(id); updateCounts(); renderFeatured(); renderLibrary(); renderReader(findResource(id)); showToast(completed.has(id) ? "Nice work. Topic marked complete." : "Completion status updated."); return; }
   const sourceButton = event.target.closest("[data-open-source]");
   if (sourceButton) { openSource(sourceButton.dataset.openSource); return; }
   const card = event.target.closest("[data-open-resource]");
-  if (card) { const resource = resources.find((item) => item.id === card.dataset.openResource); if (resource) renderReader(resource); return; }
+  if (card) { const resource = findResource(card.dataset.openResource); if (resource) renderReader(resource); return; }
   const scrollButton = event.target.closest("[data-scroll-to]");
   if (scrollButton) { document.getElementById(scrollButton.dataset.scrollTo)?.scrollIntoView({ behavior: "smooth" }); return; }
   const flashcard = event.target.closest("[data-flashcard]");
@@ -278,6 +308,79 @@ document.querySelector("#contact-form").addEventListener("submit", (event) => {
   updateContactLinks(contact);
   document.querySelector("#contact-saved").hidden = false;
   showToast("Contact details saved on this device.");
+});
+
+document.querySelector("#admin-access-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const pin = String(new FormData(form).get("pin"));
+  const storedPin = localStorage.getItem(storageKeys.adminPin);
+  const status = document.querySelector("#admin-access-status");
+  try {
+    const digest = await hashAdminPin(pin);
+    if (!storedPin) {
+      localStorage.setItem(storageKeys.adminPin, digest);
+      adminUnlocked = true;
+    } else if (digest === storedPin) {
+      adminUnlocked = true;
+    } else {
+      status.textContent = "That PIN did not match. Try again.";
+      return;
+    }
+    form.reset();
+    status.textContent = "Workspace unlocked.";
+    renderAdminGate();
+  } catch {
+    status.textContent = "PIN setup needs a secure browser context. Open the site on localhost or its HTTPS address.";
+  }
+});
+
+document.querySelector("#admin-note-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!adminUnlocked) return;
+  const form = event.currentTarget;
+  const data = new FormData(form);
+  const body = String(data.get("body")).trim();
+  const outline = body.split(/\n\s*\n/).map((part) => part.trim().replace(/\s+/g, " ")).filter(Boolean);
+  if (!outline.length) return;
+  const title = String(data.get("title")).trim();
+  customNotes.unshift({
+    id: `custom-${Date.now()}`,
+    custom: true,
+    title,
+    subject: String(data.get("subject")),
+    description: String(data.get("description")).trim(),
+    body,
+    minutes: Math.max(3, Math.ceil(body.split(/\s+/).length / 180)),
+    outline,
+    cards: [{ q: `What is the key idea in ${title}?`, a: outline[0] }],
+    quiz: { q: `Which action is most useful when reviewing ${title}?`, options: ["Explain its sections in your own words", "Skip the notes entirely", "Memorize only the title"], answer: 0, explain: "Summarizing each section in your own words supports understanding and recall." }
+  });
+  updateCounts();
+  renderSubjects();
+  renderAdminWorkspace();
+  renderLibrary();
+  form.reset();
+  document.querySelector("#admin-note-status").textContent = "Added to your Study Library on this browser.";
+});
+
+document.querySelector("#admin-note-list").addEventListener("click", (event) => {
+  const deleteButton = event.target.closest("[data-delete-note]");
+  if (!deleteButton || !adminUnlocked) return;
+  const { deleteNote } = deleteButton.dataset;
+  customNotes = customNotes.filter((note) => note.id !== deleteNote);
+  saved.delete(deleteNote);
+  completed.delete(deleteNote);
+  updateCounts();
+  renderSubjects();
+  renderAdminWorkspace();
+  renderLibrary();
+  renderReview();
+});
+
+document.querySelector("#admin-lock").addEventListener("click", () => {
+  adminUnlocked = false;
+  renderAdminGate();
 });
 
 document.querySelector("#today-label").textContent = new Intl.DateTimeFormat(undefined, { weekday: "short", month: "short", day: "numeric" }).format(new Date()).toUpperCase();

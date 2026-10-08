@@ -1,0 +1,28 @@
+.admin-wrap{max-width:1420px}
+.admin-gate{max-width:740px;margin:clamp(42px,9vh,110px) auto;padding:clamp(26px,5vw,58px);border:1px solid var(--line);background:linear-gradient(145deg,rgba(25,39,49,.96),rgba(11,18,25,.96));box-shadow:0 28px 80px rgba(0,0,0,.28)}
+.admin-gate[hidden],#admin-workspace[hidden]{display:none!important}
+.admin-gate h1,.admin-intro h1{margin:14px 0;font-size:clamp(2rem,4vw,3.4rem);line-height:1.05}
+.admin-gate h1 span,.admin-intro h1 span{color:var(--green)}
+.admin-gate>p,.admin-intro>p{max-width:760px;color:var(--muted);line-height:1.75}
+.admin-form{display:grid;gap:16px}
+.admin-access-form{max-width:430px;margin-top:28px}
+.admin-form label{display:grid;gap:8px;color:var(--ink);font-size:.88rem;font-weight:600}
+.admin-form label small{color:var(--muted);font-size:.76rem;font-weight:400}
+.admin-form input,.admin-form select,.admin-form textarea{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:3px;background:rgba(3,8,12,.65);color:var(--ink);font:inherit}
+.admin-form textarea{min-height:230px;resize:vertical;line-height:1.7}
+.admin-form input:focus,.admin-form select:focus,.admin-form textarea:focus{outline:2px solid var(--aqua);outline-offset:2px}
+.admin-form select option{background:#101a23;color:var(--ink)}
+.admin-status{min-height:1.35em;margin:0;color:var(--aqua);font-size:.84rem}
+.admin-intro{position:relative;padding-right:180px}
+.admin-lock{position:absolute;right:0;top:28px}
+.admin-layout{display:grid;grid-template-columns:minmax(300px,.92fr) minmax(0,1.08fr);gap:clamp(24px,4vw,56px);margin-top:34px;padding-top:32px;border-top:1px solid var(--line)}
+.admin-note-form,.admin-entries{padding:clamp(20px,3vw,34px);border:1px solid var(--line);background:linear-gradient(155deg,rgba(24,37,47,.9),rgba(12,20,27,.84))}
+.admin-note-form h2,.admin-entries h2{margin:0 0 20px;font-size:1.45rem;color:var(--ink)}
+.admin-entry{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:20px 0;border-top:1px solid var(--line)}
+.admin-entry>div>span{color:var(--aqua);font:500 .68rem "DM Mono",monospace;text-transform:uppercase}
+.admin-entry h3{margin:7px 0;font-size:1.08rem;color:var(--ink)}
+.admin-entry p,.admin-empty{margin:0;color:var(--muted);font-size:.88rem;line-height:1.6}
+.admin-delete{flex:none;border:1px solid var(--line);padding:8px 11px;background:transparent;color:var(--coral);font:inherit;cursor:pointer}
+.admin-delete:hover{border-color:var(--coral);background:rgba(243,179,159,.08)}
+.admin-empty{padding:16px 0}
+@media(max-width:760px){.admin-intro{padding-right:0;padding-bottom:54px}.admin-lock{top:auto;right:auto;bottom:0}.admin-layout{grid-template-columns:1fr}.admin-entry{gap:12px}}
