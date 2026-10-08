@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f4ef" />
+    <meta name="description" content="A clear, interactive study library for health-science students. Understand deeply. Learn for life." />
+    <title>Elvin School — Understand deeply. Learn for life.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="hero.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+        <a class="brand" href="#home" data-view="home" aria-label="Elvin School home">
+          <span class="brand-mark">e<span>.</span></span>
+          <span class="brand-copy"><strong>elvin school</strong><small>LEARNING, MADE CLEAR</small></span>
+        </a>
+
+        <div class="sidebar-label">WORKSPACE</div>
+        <nav class="primary-nav">
+          <button class="nav-item is-active" data-view="home"><span class="nav-icon">⌂</span>Overview<span class="nav-shortcut">01</span></button>
+          <button class="nav-item" data-view="library"><span class="nav-icon">▤</span>Study library<span class="nav-count" id="nav-count">15</span></button>
+          <button class="nav-item" data-view="review"><span class="nav-icon">◈</span>Review deck<span class="nav-count" id="saved-count">0</span></button>
+        </nav>
+
+        <div class="sidebar-heading"><span>YOUR SUBJECTS</span><button id="show-all-subjects" aria-label="Show all subjects" title="Show all subjects">↗</button></div>
+        <nav class="subject-nav" id="subject-nav"></nav>
+
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-note"><span class="sparkle">✳</span><p>Small steps make<br />strong understanding.</p><div class="note-line"><span></span><span>KEEP GOING</span><span></span></div></div>
+        <button class="profile-button" id="profile-button">
+          <span class="profile-avatar">E</span><span class="profile-copy"><strong>Elvin</strong><small>Your learning space</small></span><span class="profile-menu">···</span>
+        </button>
+      </aside>
+
+      <main class="main-area">
+        <header class="topbar">
+          <button class="icon-button mobile-menu" id="mobile-menu" aria-label="Open navigation">☰</button>
+          <div class="breadcrumbs"><span>Elvin School</span><span class="breadcrumb-slash">/</span><span id="breadcrumb-current">Overview</span></div>
+          <div class="topbar-actions">
+            <label class="search-box" for="global-search"><span class="search-icon">⌕</span><input id="global-search" type="search" placeholder="Find a topic..." autocomplete="off" /><kbd>⌘ K</kbd></label>
+            <button class="icon-button top-contact" id="contact-open" aria-label="Open contact details" title="Contact Elvin School">↗</button>
+          </div>
+        </header>
+
+        <section class="view is-visible" id="home-view" aria-label="Overview">
+          <div class="content-wrap">
+            <div class="welcome-line"><span class="eyebrow"><span class="status-dot"></span> YOUR PERSONAL STUDY SPACE</span><span class="date-stamp" id="today-label"></span></div>
+            <div class="hero">
+              <div class="hero-copy">
+                <div class="hero-overline">A BETTER WAY TO MAKE IT STICK</div>
+                <h1>Understand deeply.<br /><span>Learn for life.</span></h1>
+                <p>Good learning starts with a clear next step.<br class="desktop-break" /> Find your topic, make sense of it, and keep moving.</p>
+                <button class="button button-dark" data-view="library">Explore the library <span>↗</span></button>
+                <div class="hero-footnote"><span class="tiny-star">✳</span> BUILT FOR CURIOUS HEALTH-SCIENCE MINDS</div>
+              </div>
+              <div class="hero-art" aria-label="Elvin School learning map">
+                <img class="hero-art-photo" src="photo.jpeg" alt="" />
+                <div class="hero-visual-scene" aria-hidden="true">
+                  <div class="visual-topline"><span>ELVIN SCHOOL / LEARNING MAP</span><i>ES.01</i></div>
+                  <div class="orbit-scene"><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="orbit orbit-three"></span><span class="orbit-center">e<span>.</span></span><span class="orbit-tag tag-bio">BIOCHEMISTRY</span><span class="orbit-tag tag-clinical">CLINICAL SCIENCES</span></div>
+                </div>
+                <div class="art-label"><span class="art-label-dot"></span> A PLACE TO FIGURE IT OUT</div>
+                <div class="art-caption">One clear idea<br />at a time.</div>
+                <span class="art-index">ES / 001</span>
+              </div>
+              <span class="hero-decoration" aria-hidden="true">✳</span>
+            </div>
+
+            <div class="stats-row">
+              <div class="stat"><span class="stat-icon coral">▤</span><span><strong id="stat-notes">15</strong><small>study resources</small></span></div>
+              <div class="stat"><span class="stat-icon aqua">◉</span><span><strong>03</strong><small>subject areas</small></span></div>
+              <div class="stat"><span class="stat-icon yellow">✳</span><span><strong id="stat-progress">0%</strong><small>your progress</small></span></div>
+              <button class="stat stat-action" data-view="review"><span class="stat-icon green">♧</span><span><strong id="stat-saved">0 saved</strong><small>ready for review</small></span><span class="stat-arrow">↗</span></button>
+            </div>
+
+            <section class="section-block recent-section">
+              <div class="section-heading"><div><span class="section-kicker">A GOOD PLACE TO START</span><h2>Pick up an idea.</h2></div><button class="text-link" data-view="library">All study resources <span>↗</span></button></div>
+              <div class="resource-grid" id="featured-grid"></div>
+            </section>
+
+            <section class="quote-strip"><span class="quote-mark">“</span><p>Make the complicated feel possible.</p><span class="quote-credit">THE ELVIN SCHOOL PROMISE <i></i></span></section>
+
+            <section class="section-block subject-section">
+              <div class="section-heading"><div><span class="section-kicker">YOUR LEARNING, AT A GLANCE</span><h2>Explore by subject.</h2></div><span class="section-aside">Follow a thread, find the connections.</span></div>
+              <div class="subject-tiles" id="subject-tiles"></div>
+            </section>
+
+            <footer class="site-footer"><a class="footer-brand" href="#home" data-view="home">elvin<span>.</span></a><span>Understand deeply. Learn for life.</span><button id="about-open">A little about us ↗</button></footer>
+          </div>
+        </section>
+
+        <section class="view" id="library-view" aria-label="Study library">
+          <div class="content-wrap">
+            <div class="page-intro"><span class="section-kicker">YOUR LEARNING, ORGANIZED</span><h1>A library of <span>good ideas.</span></h1><p>Find a topic. Follow your curiosity. Make it make sense.</p></div>
+            <div class="library-toolbar"><div class="filter-tabs" id="filter-tabs" role="group" aria-label="Filter resources"></div><span class="results-count" id="results-count"></span></div>
+            <div class="library-grid resource-grid" id="library-grid"></div>
+            <div class="empty-state" id="empty-state" hidden><span>⌕</span><strong>No topics found</strong><p>Try a different search or subject.</p><button class="text-link" id="clear-search">Clear search ↗</button></div>
+          </div>
+        </section>
+
+        <section class="view" id="reader-view" aria-label="Study note reader">
+          <div class="reader-wrap">
+            <div class="reader-topline"><button class="back-link" data-view="library">← All resources</button><span class="reader-source" id="reader-source"></span></div>
+            <div class="reader-layout"><article class="reader-article" id="reader-article"></article><aside class="reader-rail" id="reader-rail"></aside></div>
+          </div>
+        </section>
+
+        <section class="view" id="review-view" aria-label="Study review deck">
+          <div class="content-wrap">
+            <div class="page-intro"><span class="section-kicker">A LITTLE PRACTICE GOES A LONG WAY</span><h1>Your <span>review deck.</span></h1><p>Saved topics and quick questions, all in one place.</p></div>
+            <div id="review-content"></div>
+          </div>
+        </section>
+
+        <section class="view" id="about-view" aria-label="About Elvin School">
+          <div class="content-wrap about-wrap">
+            <span class="section-kicker">A SCHOOL OF ONE'S OWN</span><h1>Clarity changes<br /><span>everything.</span></h1>
+            <p class="about-lead">Elvin School is a growing learning space for health-science students: a place to meet a hard topic with patience, understand how its pieces fit, and leave with more confidence than you came in with.</p>
+            <div class="about-values"><article><span>01 / OUR MISSION</span><h2>Make room for understanding.</h2><p>Turn complex health-science subjects into clear, well-organized learning experiences students can actually use.</p></article><article><span>02 / OUR VISION</span><h2>Curiosity that goes further.</h2><p>Build a trusted learning community where foundational science and clinical thinking strengthen one another.</p></article><article><span>03 / OUR MOTTO</span><h2>Understand deeply.<br />Learn for life.</h2><p>Because knowing the why is what helps learning last.</p></article></div>
+            <div class="founder-block"><div class="founder-photo"><span>YOUR PHOTO<br />COMING SOON</span><i>✳</i></div><div><span class="section-kicker">THE PERSON BEHIND THE NOTES</span><h2>Made with purpose, by Elvin.</h2><p>This space is built around the belief that learning should feel clear, welcoming, and possible. A photo and a personal introduction can go here when you're ready.</p><button class="button button-outline" id="about-contact">Get in touch <span>↗</span></button></div></div>
+            <footer class="site-footer"><a class="footer-brand" href="#home" data-view="home">elvin<span>.</span></a><span>Understand deeply. Learn for life.</span><button id="about-open-footer">A little about us ↗</button></footer>
+          </div>
+        </section>
+
+        <div class="mobile-bottom"><button data-view="home"><span>⌂</span>Home</button><button data-view="library"><span>▤</span>Library</button><button data-view="review"><span>◈</span>Review</button><button id="mobile-contact"><span>↗</span>Contact</button></div>
+      </main>
+    </div>
+
+    <div class="modal-backdrop" id="contact-modal" hidden><section class="modal contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-title"><button class="modal-close" data-close-modal aria-label="Close">×</button><span class="section-kicker">LET'S STAY CONNECTED</span><h2 id="contact-title">A note from you<br /><span>would be lovely.</span></h2><p class="modal-hint">Add your details here whenever you’re ready. They’re saved only in this browser.</p><form id="contact-form"><label>Your email<input name="email" type="email" placeholder="hello@example.com" /></label><label>WhatsApp number <small>Include your country code, digits only.</small><input name="phone" type="tel" placeholder="e.g. 256700000000" /></label><button class="button button-dark" type="submit">Save contact details <span>↗</span></button></form><a class="whatsapp-link" id="whatsapp-link" href="#" target="_blank" rel="noreferrer" hidden>Message on WhatsApp ↗</a><a class="email-link" id="email-link" href="mailto:" hidden></a><p class="contact-saved" id="contact-saved" hidden>Details saved on this device.</p></section></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
