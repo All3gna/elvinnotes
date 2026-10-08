@@ -58,7 +58,49 @@ function updateCounts() {
 function renderSubjects() {
   const subjectNav = document.querySelector("#subject-nav");
   subjectNav.innerHTML = subjects.map((subject) => `<button class="subject-item" data-subject="${subject.id}"><i class="subject-dot" style="background:${subject.color}"></i>${escapeHtml(subject.name)}<span>${resources.filter((item) => item.subject === subject.id).length.toString().padStart(2, "0")}</span></button>`).join("");
-  document.querySelector("#subject-tiles").innerHTML = subjects.map((subject, index) => `<button class="subject-tile" data-subject="${subject.id}" style="--tile-color:${subject.color}"><span class="subject-num">0${index + 1} / SUBJECT</span><span class="tile-arrow">↗</span><strong>${escapeHtml(subject.name)}</strong><small>${resources.filter((item) => item.subject === subject.id).length} study resources · ${escapeHtml(subject.short)}</small></button>`).join("");
+  document.querySelector("#subject-tiles").innerHTML = subjects.map((subject, index) => `<button class="subject-tile" data-subject="${subject.id}" style="--tile-color:${subject.color}; --tile-accent:${index === 2 ? "#e9d79d" : subject.color};"><span class="tile-arrow">↗</span><strong>${escapeHtml(subject.name)}</strong><small>${resources.filter((item) => item.subject === subject.id).length} study resources · ${escapeHtml(subject.short)}</small></button>`).join("");
+}
+
+function buildSummary(resource) {
+  const summary = resource.outline.slice(0, 4);
+  const quickTake = summary[0] || resource.description;
+  return {
+    headline: `Big idea: ${resource.description}`,
+    focus: quickTake,
+    bullets: summary.map((point) => point),
+    caution: `Use the original notes to verify the full diagrams, examples and lecturer-specific emphasis in ${resource.title}.`
+  };
+}
+
+function buildQuickTests(resource) {
+  return [
+    {
+      q: resource.quiz.q,
+      options: resource.quiz.options,
+      answer: resource.quiz.answer,
+      explain: resource.quiz.explain
+    },
+    {
+      q: `Which action best improves retention after reading a section in ${resource.title}?`,
+      options: [
+        "Explain it in your own words and relate it to a wider concept",
+        "Skip to the next page without checking understanding",
+        "Memorize only the chapter title"
+      ],
+      answer: 0,
+      explain: "Active recall and explanation helps you connect new information to the bigger picture."
+    },
+    {
+      q: `What is the most important idea to keep in mind when studying ${resource.title}?`,
+      options: [
+        `Focus on the main mechanism, structure, or theme behind the topic`,
+        "Only remember the last slide",
+        "Ignore the original source material"
+      ],
+      answer: 0,
+      explain: "Studying the core mechanism or concept helps you understand the material beyond isolated facts."
+    }
+  ];
 }
 
 function createResourceCard(resource, index) {
@@ -109,6 +151,8 @@ function showView(viewName, label) {
 function renderReader(resource) {
   activeResource = resource;
   const subject = getSubject(resource.subject);
+  const summary = buildSummary(resource);
+  const quickTests = buildQuickTests(resource);
   document.querySelector("#reader-source").textContent = `SOURCE  /  ${resource.source}`;
   document.querySelector("#reader-article").innerHTML = `
     <div class="reader-overline">${escapeHtml(subject.name.toUpperCase())} &nbsp;·&nbsp; A CLEAR STUDY GUIDE</div>
@@ -116,13 +160,12 @@ function renderReader(resource) {
     <div class="reader-meta"><span>${resource.minutes} MIN READ</span><i></i><span>${resource.outline.length} KEY IDEAS</span><i></i><span>${resource.cards.length} FLASHCARD${resource.cards.length === 1 ? "" : "S"}</span></div>
     <div class="reader-controls"><button class="button button-outline" data-toggle-save="${resource.id}">${saved.has(resource.id) ? "◆ Saved to review" : "◇ Save for review"}</button><button class="button button-outline" data-open-source="${resource.id}">Open original notes ↗</button><button class="button button-dark" data-mark-complete="${resource.id}">${completed.has(resource.id) ? "✓ Completed" : "Mark complete"}</button></div>
     <section class="reader-section" id="overview"><h2>Start with the big picture.</h2><p>${escapeHtml(resource.description)} Before diving into details, take a moment to identify the main idea, then look for how the smaller pieces connect.</p></section>
+    <section class="reader-section" id="summary"><h2>Summary snapshot.</h2><div class="summary-box"><div class="summary-header">${escapeHtml(summary.headline)}</div><ul class="summary-points">${summary.bullets.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}</ul><p>${escapeHtml(summary.caution)}</p></div></section>
     <section class="reader-section" id="key-ideas"><h2>Key ideas to follow.</h2><p>Use these as a reading path through your original material. Pause after each one and explain it in your own words.</p><div class="learning-list">${resource.outline.map((item, index) => `<div class="learning-item"><i>${String(index + 1).padStart(2, "0")}</i><span>${escapeHtml(item)}</span></div>`).join("")}</div></section>
     <section class="reader-section" id="flashcards"><h2>Try a quick recall.</h2><p>Tap a card to reveal the answer. Try to say it out loud before you turn it over.</p><div class="flashcard" data-flashcard="0" tabindex="0" role="button" aria-label="Reveal flashcard answer"><span class="flashcard-count">FLASHCARD 01 / ${String(resource.cards.length).padStart(2, "0")}</span><strong class="flashcard-prompt">${escapeHtml(resource.cards[0].q)}</strong><span class="flashcard-content"><span class="flashcard-hint">Tap to reveal ↗</span></span></div></section>
-    <section class="reader-section" id="check-yourself"><h2>Check your understanding.</h2><p>Choose an answer to see a little feedback.</p><div class="quiz-box" data-quiz="${resource.id}"><span class="quiz-label">ONE QUICK QUESTION</span><h3>${escapeHtml(resource.quiz.q)}</h3><div class="quiz-options">${resource.quiz.options.map((option, index) => `<button class="quiz-option" data-quiz-option="${index}">${escapeHtml(option)}</button>`).join("")}</div><p class="quiz-feedback" aria-live="polite"></p></div></section>
+    <section class="reader-section" id="check-yourself"><h2>Check your understanding.</h2><p>Choose an answer to see a little feedback.</p><div class="quiz-stack">${quickTests.map((entry, index) => `<div class="quiz-box" data-quiz="${resource.id}-${index}" data-answer="${entry.answer}" data-explain="${escapeHtml(entry.explain)}"><span class="quiz-label">QUICK TEST ${String(index + 1).padStart(2, "0")}</span><h3>${escapeHtml(entry.q)}</h3><div class="quiz-options">${entry.options.map((option, optionIndex) => `<button class="quiz-option" data-quiz-option="${optionIndex}">${escapeHtml(option)}</button>`).join("")}</div><p class="quiz-feedback" aria-live="polite"></p></div>`).join("")}</div></section>
     <section class="reader-section" id="original"><h2>Continue with the original.</h2><div class="source-callout"><p>This study guide is a companion, not a substitute for your source material. Open the original lecture or reference to review the full diagrams, explanations, and course-specific detail.</p></div><button class="button button-dark source-open-button" data-open-source="${resource.id}">Open ${resource.source.toLowerCase().endsWith(".pdf") ? "reference book" : "lecture slides"} <span>↗</span></button></section>`;
-  document.querySelector("#reader-rail").innerHTML = `<div class="reader-rail-title">IN THIS NOTE</div><div class="reader-rail-links">${[["overview", "The big picture"], ["key-ideas", "Key ideas"], ["flashcards", "Flashcards"], ["check-yourself", "Quick check"], ["original", "Original notes"]].map(([id, label]) => `<button class="rail-link" data-scroll-to="${id}">${label}</button>`).join("")}</div><div class="rail-tip"><span>✳</span><p>Try explaining one idea from memory before you move to the next.</p></div>`;
-  document.querySelector("#reader-article").querySelector("[data-quiz]").dataset.answer = String(resource.quiz.answer);
-  document.querySelector("#reader-article").querySelector("[data-quiz]").dataset.explain = resource.quiz.explain;
+  document.querySelector("#reader-rail").innerHTML = `<div class="reader-rail-title">IN THIS NOTE</div><div class="reader-rail-links">${[["overview", "The big picture"], ["summary", "Summary"], ["key-ideas", "Key ideas"], ["flashcards", "Flashcards"], ["check-yourself", "Quick tests"], ["original", "Original notes"]].map(([id, label]) => `<button class="rail-link" data-scroll-to="${id}">${label}</button>`).join("")}</div><div class="rail-tip"><span>✳</span><p>Try explaining one idea from memory before you move to the next.</p></div>`;
   showView("reader", resource.title);
 }
 
