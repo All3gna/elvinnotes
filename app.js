@@ -401,7 +401,7 @@ function updateContactLinks(contact) {
   const whatsapp = document.querySelector("#whatsapp-link");
   const email = document.querySelector("#email-link");
   const phoneDigits = (contact.phone || "").replace(/\D/g, "");
-  const normalizedWhatsApp = phoneDigits.startsWith("0") ? `256${phoneDigits.slice(1)}` : phoneDigits;
+  const normalizedWhatsApp = phoneDigits.startsWith("0") ? `254${phoneDigits.slice(1)}` : phoneDigits;
   const emailAddress = contact.email || contactDefaults.email;
   whatsapp.href = `https://wa.me/${normalizedWhatsApp}?text=${encodeURIComponent("Hello Elvin, I found your study website.")}`;
   whatsapp.setAttribute("aria-label", `Open WhatsApp chat with ${contact.phone || contactDefaults.phone}`);
