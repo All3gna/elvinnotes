@@ -209,9 +209,11 @@ function renderReview() {
 
 function buildEmbeddedFileUrl(resource) {
   if (resource.custom) return "";
-  const absolute = new URL(getSourceUrl(resource.source), window.location.href).href;
-  if (resource.source.toLowerCase().endsWith(".pdf")) return absolute;
-  return `https://docs.google.com/gview?url=${encodeURIComponent(absolute)}&embedded=true`;
+  const isPowerPoint = /\.pptx?$/i.test(resource.source);
+  const previewFile = isPowerPoint
+    ? `slide-previews/${encodeURI(resource.source.replace(/\.pptx?$/i, ".pdf"))}`
+    : getSourceUrl(resource.source);
+  return new URL(previewFile, window.location.href).href;
 }
 
 function openResourceInSite(resourceId) {
@@ -229,12 +231,6 @@ function openResourceInSite(resourceId) {
     iframe.src = "";
     iframe.srcdoc = `<!doctype html><html><head><style>body{font-family:Arial,sans-serif;padding:28px;line-height:1.8;color:#0f1720;background:#f8f5ee}p{margin:0 0 1em}h1,h2,h3{color:#111827}strong{color:#234}</style></head><body>${bodyHtml}</body></html>`;
     downloadLink.hidden = true;
-  } else if (/\.pptx?$/i.test(resource.source) && ["localhost", "127.0.0.1"].includes(window.location.hostname)) {
-    iframe.src = "";
-    iframe.srcdoc = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f4f2eb;color:#172126;font:16px/1.6 Arial,sans-serif}.message{max-width:480px;padding:36px}span{font-size:12px;font-weight:700;letter-spacing:.14em;color:#56715f}h1{font-size:30px;line-height:1.15}p{color:#536168}</style></head><body><main class="message"><span>SLIDE PREVIEW</span><h1>Your slides are ready.</h1><p>PowerPoint previews need a publicly hosted file. This local site cannot provide that to the online preview service. Use the Download button below, or publish the site to preview slides here.</p></main></body></html>`;
-    downloadLink.hidden = false;
-    downloadLink.href = getSourceUrl(resource.source);
-    downloadLink.setAttribute("download", resource.source);
   } else {
     iframe.srcdoc = "";
     iframe.src = buildEmbeddedFileUrl(resource);
