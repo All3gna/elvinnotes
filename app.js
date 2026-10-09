@@ -391,14 +391,10 @@ async function hashAdminPin(pin) {
 function openContact() {
   const contact = getStoredContact();
   const modal = document.querySelector("#contact-modal");
-  const form = document.querySelector("#contact-form");
-  form.elements.email.value = contact.email || "";
-  form.elements.phone.value = contact.phone || "";
-  document.querySelector("#contact-saved").hidden = !contact.email && !contact.phone;
   updateContactLinks(contact);
   modal.hidden = false;
   document.body.classList.add("modal-open");
-  form.elements.email.focus();
+  modal.querySelector("[data-close-modal]").focus();
 }
 
 function updateContactLinks(contact) {
@@ -406,12 +402,13 @@ function updateContactLinks(contact) {
   const email = document.querySelector("#email-link");
   const phoneDigits = (contact.phone || "").replace(/\D/g, "");
   const normalizedWhatsApp = phoneDigits.startsWith("0") ? `256${phoneDigits.slice(1)}` : phoneDigits;
-  whatsapp.hidden = normalizedWhatsApp.length < 9;
-  whatsapp.href = normalizedWhatsApp.length >= 9 ? `https://wa.me/${normalizedWhatsApp}` : "#";
-  email.hidden = !contact.email;
-  email.href = contact.email ? `mailto:${encodeURIComponent(contact.email)}` : "mailto:";
-  email.textContent = contact.email ? `Email ${contact.email}` : "";
-  if (!contact.email) email.setAttribute("aria-label", "Send email");
+  const emailAddress = contact.email || contactDefaults.email;
+  whatsapp.href = `https://wa.me/${normalizedWhatsApp}?text=${encodeURIComponent("Hello Elvin, I found your study website.")}`;
+  whatsapp.setAttribute("aria-label", `Open WhatsApp chat with ${contact.phone || contactDefaults.phone}`);
+  email.href = `mailto:${emailAddress}?subject=${encodeURIComponent("Hello Elvin School")}`;
+  email.setAttribute("aria-label", `Send email to ${emailAddress}`);
+  document.querySelector("#whatsapp-destination").textContent = contact.phone || contactDefaults.phone;
+  document.querySelector("#email-destination").textContent = emailAddress;
 }
 
 function closeContact() {
@@ -499,16 +496,6 @@ document.querySelectorAll("[data-timer-action]").forEach((button) => {
     showToast("Study timer reset.");
   });
 });
-document.querySelector("#contact-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  const data = new FormData(event.currentTarget);
-  const contact = { email: String(data.get("email")).trim() || contactDefaults.email, phone: String(data.get("phone")).trim() || contactDefaults.phone };
-  localStorage.setItem(storageKeys.contact, JSON.stringify(contact));
-  updateContactLinks(contact);
-  document.querySelector("#contact-saved").hidden = false;
-  showToast("Contact details saved on this device.");
-});
-
 document.querySelector("#resource-viewer").addEventListener("click", (event) => { if (event.target.id === "resource-viewer") closeResourceInSite(); });
 document.querySelectorAll("[data-close-resource-viewer]").forEach((button) => button.addEventListener("click", closeResourceInSite));
 document.querySelector("#pdf-previous").addEventListener("click", () => {

@@ -198,23 +198,153 @@
 }
 
 .contact-quick-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
 }
 
-.whatsapp-link,
-.email-link {
-  display: inline-flex;
+.contact-modal {
+  width: min(620px, calc(100vw - 32px));
+  padding: 32px;
+  overflow: hidden;
+  animation: contact-panel-in 260ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.contact-modal .modal-hint {
+  max-width: 420px;
+  margin: 12px 0 0;
+  color: rgba(228, 237, 246, 0.74);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.contact-modal .contact-quick-actions {
+  margin-top: 24px;
+}
+
+.contact-action {
+  position: relative;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 10px 14px;
-  border: 1px solid rgba(168, 214, 143, 0.35);
-  border-radius: 12px;
-  background: rgba(169, 218, 139, 0.12);
-  color: #d9f5a2;
-  font: 700 10px "Manrope", "DM Sans", sans-serif;
+  gap: 15px;
+  min-width: 0;
+  min-height: 118px;
+  padding: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(207, 222, 231, 0.2);
+  border-radius: 16px;
+  color: #f4f8ff;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  animation: contact-action-in 340ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.contact-action:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.contact-action::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(115deg, transparent 18%, rgba(255, 255, 255, 0.12) 48%, transparent 78%);
+  transform: translateX(-100%);
+  transition: opacity 160ms ease, transform 440ms ease;
+  pointer-events: none;
+}
+
+.contact-action:hover {
+  transform: translateY(-3px);
+}
+
+.contact-action:hover::after {
+  opacity: 1;
+  transform: translateX(100%);
+}
+
+.contact-action:focus-visible {
+  outline: 3px solid #f4f8ff;
+  outline-offset: 3px;
+}
+
+.contact-action-whatsapp {
+  border-color: rgba(89, 205, 132, 0.42);
+  background: linear-gradient(135deg, rgba(30, 105, 66, 0.4), rgba(16, 43, 35, 0.74));
+}
+
+.contact-action-whatsapp:hover {
+  border-color: #59cd84;
+  box-shadow: 0 14px 32px rgba(43, 171, 99, 0.18);
+}
+
+.contact-action-email {
+  border-color: rgba(127, 174, 224, 0.38);
+  background: linear-gradient(135deg, rgba(46, 79, 118, 0.4), rgba(22, 37, 57, 0.76));
+}
+
+.contact-action-email:hover {
+  border-color: #94bdec;
+  box-shadow: 0 14px 32px rgba(75, 133, 196, 0.2);
+}
+
+.contact-action-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.contact-action-icon svg {
+  display: block;
+  width: 29px;
+  height: 29px;
+}
+
+.contact-action-email .contact-action-icon svg {
+  width: 30px;
+  height: 24px;
+}
+
+.contact-action-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.contact-action-copy strong {
+  font: 700 16px/1.25 "Manrope", "DM Sans", sans-serif;
+}
+
+.contact-action-copy small {
+  overflow: hidden;
+  color: rgba(228, 237, 246, 0.76);
+  font: 500 11px/1.4 "DM Sans", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contact-action-copy .contact-action-hint {
+  margin-top: 5px;
+  color: #e4f2d1;
+  font-weight: 700;
+}
+
+.contact-action-email .contact-action-hint {
+  color: #c5ddfa;
+}
+
+@keyframes contact-panel-in {
+  from { opacity: 0; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes contact-action-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .learning-roadmap {
@@ -444,6 +574,20 @@
 }
 
 @media (max-width: 760px) {
+  .contact-modal {
+    padding: 26px 22px;
+  }
+
+  .contact-quick-actions {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .contact-action {
+    min-height: 94px;
+    padding: 15px;
+  }
+
   .portal-header {
     flex-direction: column;
     align-items: flex-start;
