@@ -243,7 +243,7 @@ async function renderPdfPage() {
   const page = await pdfDocument.getPage(pdfPageNumber);
   if (token !== pdfRenderToken) return;
   const baseViewport = page.getViewport({ scale: 1 });
-  const availableWidth = Math.max(280, document.querySelector(".pdf-page-wrap").clientWidth - 24);
+  const availableWidth = Math.max(160, document.querySelector(".pdf-page-wrap").clientWidth - 28);
   const scale = Math.min(2, availableWidth / baseViewport.width);
   const viewport = page.getViewport({ scale });
   const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
@@ -281,7 +281,8 @@ async function openPdfPreview(url) {
     pdfDocument = await loadingTask.promise;
     await renderPdfPage();
   } catch (error) {
-    preview.querySelector(".pdf-page-wrap").innerHTML = "";
+    const canvas = document.querySelector("#pdf-page-canvas");
+    canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
     status.textContent = "Preview could not load. Use Download to open the file.";
     console.error("PDF preview failed:", error);
   }
