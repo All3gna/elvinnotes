@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="custom.css" />
     <link rel="stylesheet" href="admin.css" />
     <link rel="stylesheet" href="hero.css" />
     <script src="app.js" defer></script>
@@ -18,7 +19,7 @@
     <div class="app-shell">
       <aside class="sidebar" id="sidebar" aria-label="Main navigation">
         <a class="brand" href="#home" data-view="home" aria-label="Elvin School home">
-          <span class="brand-mark">e<span>.</span></span>
+          <span class="brand-mark brand-mark-photo"><img src="background.jpeg" alt="Elvin profile" /></span>
           <span class="brand-copy"><strong>elvin school</strong><small>LEARNING, MADE CLEAR</small></span>
         </a>
 
@@ -108,6 +109,76 @@
               <div class="subject-tiles" id="subject-tiles"></div>
             </section>
 
+            <section class="portal-showcase" aria-label="Study portal and research dashboard">
+              <div class="portal-header">
+                <div>
+                  <span class="section-kicker">INSTANT ACCESS</span>
+                  <h2>Open notes, slides and references without leaving your study flow.</h2>
+                </div>
+                <button class="button button-dark" data-view="library">Open library</button>
+              </div>
+              <div class="portal-layout">
+                <div class="portal-main">
+                  <div class="portal-grid" id="portal-grid"></div>
+                </div>
+                <aside class="portal-side">
+                  <div class="timer-panel">
+                    <span class="section-kicker">FOCUS TIMER</span>
+                    <div class="timer-display"><span id="study-timer">25:00</span></div>
+                    <div class="timer-controls">
+                      <button class="button button-dark" data-timer-action="start" type="button">Start</button>
+                      <button class="button button-outline" data-timer-action="reset" type="button">Reset</button>
+                    </div>
+                  </div>
+                  <div class="research-panel">
+                    <span class="section-kicker">FURTHER RESEARCH</span>
+                    <div class="research-links">
+                      <button class="research-link" data-research="wikipedia" type="button">Wikipedia</button>
+                      <button class="research-link" data-research="google" type="button">Google</button>
+                      <button class="research-link" data-research="bing" type="button">Bing</button>
+                    </div>
+                    <label class="research-search" for="research-query">Quick search
+                      <input id="research-query" type="text" placeholder="Search your topic" />
+                    </label>
+                    <button class="button button-dark" id="research-search-button" type="button">Search</button>
+                  </div>
+                </aside>
+              </div>
+            </section>
+
+            <section class="learning-roadmap" aria-label="Learning roadmap">
+              <div class="roadmap-header">
+                <div>
+                  <span class="section-kicker">YOUR LEARNING PATH</span>
+                  <h2>Build momentum from foundation to application.</h2>
+                </div>
+              </div>
+              <div class="roadmap-grid">
+                <article class="roadmap-card roadmap-card-primary">
+                  <span>01 / FOUNDATIONS</span>
+                  <h3>Understand the core concepts.</h3>
+                  <p>Break the subject into small ideas, then build a clear mental map before moving deeper.</p>
+                </article>
+                <article class="roadmap-card">
+                  <span>02 / APPLY</span>
+                  <h3>Use the knowledge.</h3>
+                  <p>Relate each topic to a case, pathway, concept, or clinical context to make it memorable.</p>
+                </article>
+                <article class="roadmap-card">
+                  <span>03 / REINFORCE</span>
+                  <h3>Review and repeat.</h3>
+                  <p>Use quick tests, flashcards, and saved topics to lock in the understanding over time.</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="insight-strip" aria-label="Study insights and momentum">
+              <div class="insight-chip"><strong>Daily streak</strong><span>7 days strong</span></div>
+              <div class="insight-chip"><strong>Focus time</strong><span>1h 45m</span></div>
+              <div class="insight-chip"><strong>Weakest link</strong><span>Metabolic pathways</span></div>
+              <div class="insight-chip"><strong>Next win</strong><span>Biochemistry review</span></div>
+            </section>
+
             <footer class="site-footer"><a class="footer-brand" href="#home" data-view="home">elvin<span>.</span></a><span>Understand deeply. Learn for life.</span><button id="about-open">A little about us</button></footer>
           </div>
         </section>
@@ -185,7 +256,25 @@
       </main>
     </div>
 
-    <div class="modal-backdrop" id="contact-modal" hidden><section class="modal contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-title"><button class="modal-close" data-close-modal aria-label="Close">×</button><span class="section-kicker">LET'S STAY CONNECTED</span><h2 id="contact-title">A note from you<br /><span>would be lovely.</span></h2><p class="modal-hint">Add your details here whenever you’re ready. They’re saved only in this browser.</p><form id="contact-form"><label>Your email<input name="email" type="email" placeholder="hello@example.com" /></label><label>WhatsApp number <small>Include your country code, digits only.</small><input name="phone" type="tel" placeholder="e.g. 256700000000" /></label><button class="button button-dark" type="submit">Save contact details</button></form><a class="whatsapp-link" id="whatsapp-link" href="#" target="_blank" rel="noreferrer" hidden>Message on WhatsApp</a><a class="email-link" id="email-link" href="mailto:" hidden></a><p class="contact-saved" id="contact-saved" hidden>Details saved on this device.</p></section></div>
+    <div class="modal-backdrop" id="contact-modal" hidden><section class="modal contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-title"><button class="modal-close" data-close-modal aria-label="Close">×</button><span class="section-kicker">LET'S STAY CONNECTED</span><h2 id="contact-title">Send a quick note<br /><span>and keep learning moving.</span></h2><p class="modal-hint">Tap to message on WhatsApp or email. The details stay saved on this browser and are ready whenever you need them.</p><form id="contact-form"><label>Your email<input name="email" type="email" placeholder="elvintonotinga@gmail.com" /></label><label>WhatsApp number <small>Digits only. We’ll format it for you.</small><input name="phone" type="tel" placeholder="0700305696" /></label><button class="button button-dark" type="submit">Save contact details</button></form><div class="contact-quick-actions"><a class="whatsapp-link" id="whatsapp-link" href="#" target="_blank" rel="noreferrer" aria-label="Open WhatsApp chat">WhatsApp</a><a class="email-link" id="email-link" href="mailto:" aria-label="Send email">Email</a></div><p class="contact-saved" id="contact-saved" hidden>Details saved on this device.</p></section></div>
+    <div class="resource-viewer-backdrop" id="resource-viewer" hidden>
+      <div class="resource-viewer" role="dialog" aria-modal="true" aria-labelledby="resource-viewer-title">
+        <div class="resource-viewer-header">
+          <div>
+            <span class="section-kicker">INSTANT PREVIEW</span>
+            <h3 id="resource-viewer-title">Study document</h3>
+          </div>
+          <button class="modal-close" data-close-resource-viewer aria-label="Close resource preview">×</button>
+        </div>
+        <div class="resource-viewer-body">
+          <iframe id="resource-viewer-iframe" title="Study document preview" loading="lazy"></iframe>
+        </div>
+        <div class="resource-viewer-footer">
+          <a class="button button-outline" id="viewer-download" href="#" target="_blank" rel="noreferrer">Download</a>
+          <button class="button button-dark" data-close-resource-viewer type="button">Close</button>
+        </div>
+      </div>
+    </div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </body>
 </html>

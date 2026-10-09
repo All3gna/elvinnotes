@@ -25,7 +25,12 @@ const resources = [
 ];
 
 const storageKeys = { saved: "elvin-school-saved-v1", completed: "elvin-school-completed-v1", contact: "elvin-school-contact-v1", customNotes: "elvin-school-custom-notes-v1", adminPin: "elvin-school-admin-pin-v1" };
+const contactDefaults = { email: "elvintonotinga@gmail.com", phone: "0700305696" };
 const readStore = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } };
+const getStoredContact = () => {
+  const stored = readStore(storageKeys.contact, contactDefaults);
+  return { email: stored.email || contactDefaults.email, phone: stored.phone || contactDefaults.phone };
+};
 let saved = new Set(readStore(storageKeys.saved, []));
 let completed = new Set(readStore(storageKeys.completed, []));
 let customNotes = readStore(storageKeys.customNotes, []);
@@ -34,6 +39,8 @@ let activeFilter = "all";
 let searchTerm = "";
 let activeResource = resources[0];
 let toastTimer;
+let studySessionSeconds = 25 * 60;
+let studyTimerId = null;
 
 const getSubject = (id) => subjects.find((subject) => subject.id === id);
 const getAllResources = () => [...resources, ...customNotes];
@@ -116,7 +123,7 @@ function createResourceCard(resource, index) {
     <div class="card-top"><span class="card-subject"><i></i>${escapeHtml(subject.name)}</span><button class="card-bookmark ${isSaved ? "is-saved" : ""}" data-save-resource="${resource.id}" aria-label="${isSaved ? "Remove saved topic" : "Save topic"}" title="${isSaved ? "Remove from review deck" : "Save for review"}">${isSaved ? "◆" : "◇"}</button></div>
     <div class="card-number">${String(index + 1).padStart(2, "0")} / ${isDone ? "COMPLETED" : "STUDY NOTE"}</div>
     <h3 class="card-title">${escapeHtml(resource.title)}</h3><p class="card-description">${escapeHtml(resource.description)}</p>
-    <div class="card-foot"><span>${resource.custom ? "APP NOTE" : `${resource.minutes} MIN READ`}</span>${resource.custom ? "<span class=\"card-file-link\">Open note</span>" : `<a class="card-file-link" href="${getSourceUrl(resource.source)}" target="_blank" rel="noopener noreferrer">Open file</a>`}</div>
+    <div class="card-foot"><span>${resource.custom ? "APP NOTE" : `${resource.minutes} MIN READ`}</span>${resource.custom ? "<button class=\"card-file-link\" type=\"button\" data-open-resource-portal=\"${resource.id}\">Open note</button>" : `<button class="card-file-link" type="button" data-open-resource-portal="${resource.id}">Instant view</button><a class="card-file-link" href="${getSourceUrl(resource.source)}" download>Download</a>`}</div>
   </article>`;
 }
 
@@ -137,6 +144,21 @@ function renderLibrary() {
 function renderFeatured() {
   const featured = [resources.find((resource) => resource.id === "glycolysis"), resources.find((resource) => resource.id === "etc"), resources.find((resource) => resource.id === "informatics")];
   document.querySelector("#featured-grid").innerHTML = featured.map((resource, index) => createResourceCard(resource, index)).join("");
+  renderPortalGrid();
+}
+
+function renderPortalGrid() {
+  const featured = [resources.find((resource) => resource.id === "glycolysis"), resources.find((resource) => resource.id === "proteins"), resources.find((resource) => resource.id === "informatics")];
+  document.querySelector("#portal-grid").innerHTML = featured.map((resource) => {
+    const subject = getSubject(resource.subject);
+    return `<article class="portal-card" data-open-resource="${resource.id}">
+      <span>${escapeHtml(subject.name.toUpperCase())}</span>
+      <h3>${escapeHtml(resource.title)}</h3>
+      <p>${escapeHtml(resource.description)}</p>
+      <div class="portal-meta"><small>${resource.minutes} min</small><small>${resource.custom ? "APP" : "FILE"}</small></div>
+      <button type="button" data-open-resource-portal="${resource.id}">View inside site →</button>
+    </article>`;
+  }).join("");
 }
 
 function renderFilters() {
@@ -164,7 +186,7 @@ function renderReader(resource) {
     <div class="reader-overline">${escapeHtml(subject.name.toUpperCase())} &nbsp;·&nbsp; A CLEAR STUDY GUIDE</div>
     <h1>${escapeHtml(resource.title)}</h1><p class="reader-summary">${escapeHtml(resource.description)} This guide gives you a clear starting structure; use the original course material for its full explanations and lecturer-specific detail.</p>
     <div class="reader-meta"><span>${resource.minutes} MIN READ</span><i></i><span>${resource.outline.length} KEY IDEAS</span><i></i><span>${resource.cards.length} FLASHCARD${resource.cards.length === 1 ? "" : "S"}</span></div>
-    <div class="reader-controls"><button class="button button-outline" data-toggle-save="${resource.id}">${saved.has(resource.id) ? "◆ Saved to review" : "◇ Save for review"}</button>${resource.custom ? "" : `<a class="button button-outline" href="${getSourceUrl(resource.source)}" target="_blank" rel="noopener noreferrer">Open original notes</a>`}<button class="button button-dark" data-mark-complete="${resource.id}">${completed.has(resource.id) ? "✓ Completed" : "Mark complete"}</button></div>
+    <div class="reader-controls"><button class="button button-outline" data-toggle-save="${resource.id}">${saved.has(resource.id) ? "◆ Saved to review" : "◇ Save for review"}</button>${resource.custom ? "" : `<button class="button button-outline" type="button" data-open-resource-portal="${resource.id}">Open original notes</button>`}<button class="button button-dark" data-mark-complete="${resource.id}">${completed.has(resource.id) ? "✓ Completed" : "Mark complete"}</button></div>
     <section class="reader-section" id="overview"><h2>Start with the big picture.</h2><p>${escapeHtml(resource.description)} Before diving into details, take a moment to identify the main idea, then look for how the smaller pieces connect.</p></section>
     <section class="reader-section" id="summary"><h2>Summary snapshot.</h2><div class="summary-box"><div class="summary-header">${escapeHtml(summary.headline)}</div><ul class="summary-points">${summary.bullets.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}</ul><p>${escapeHtml(summary.caution)}</p></div></section>
     <section class="reader-section" id="key-ideas"><h2>Key ideas to follow.</h2><p>Use these as a reading path through your original material. Pause after each one and explain it in your own words.</p><div class="learning-list">${resource.outline.map((item, index) => `<div class="learning-item"><i>${String(index + 1).padStart(2, "0")}</i><span>${escapeHtml(item)}</span></div>`).join("")}</div></section>
@@ -185,6 +207,60 @@ function renderReview() {
   review.innerHTML = `<div class="review-list">${savedResources.map((resource) => `<article class="review-card" style="--tile-color:${getSubject(resource.subject).color}"><i></i><div><h3>${escapeHtml(resource.title)}</h3><p>${escapeHtml(getSubject(resource.subject).name)} · ${resource.minutes} min read ${completed.has(resource.id) ? "· Completed" : ""}</p></div><div class="review-card-actions"><button data-open-resource="${resource.id}">Study</button><button data-save-resource="${resource.id}" aria-label="Remove ${escapeHtml(resource.title)}">Remove</button></div></article>`).join("")}</div>`;
 }
 
+function buildEmbeddedFileUrl(resource) {
+  if (resource.custom) return "";
+  const absolute = new URL(getSourceUrl(resource.source), window.location.href).href;
+  return `https://docs.google.com/gview?url=${encodeURIComponent(absolute)}&embedded=true`;
+}
+
+function openResourceInSite(resourceId) {
+  const resource = findResource(resourceId);
+  if (!resource) return;
+
+  const viewer = document.querySelector("#resource-viewer");
+  const iframe = document.querySelector("#resource-viewer-iframe");
+  const title = document.querySelector("#resource-viewer-title");
+  const downloadLink = document.querySelector("#viewer-download");
+
+  title.textContent = resource.title;
+  if (resource.custom) {
+    const bodyHtml = resource.body.split(/\n\s*\n/).map((part) => `<p>${escapeHtml(part).replace(/\n/g, "<br>")}</p>`).join("");
+    iframe.src = "";
+    iframe.srcdoc = `<!doctype html><html><head><style>body{font-family:Arial,sans-serif;padding:28px;line-height:1.8;color:#0f1720;background:#f8f5ee}p{margin:0 0 1em}h1,h2,h3{color:#111827}strong{color:#234}</style></head><body>${bodyHtml}</body></html>`;
+    downloadLink.hidden = true;
+  } else {
+    iframe.srcdoc = "";
+    iframe.src = buildEmbeddedFileUrl(resource);
+    downloadLink.hidden = false;
+    downloadLink.href = getSourceUrl(resource.source);
+    downloadLink.setAttribute("download", resource.source);
+  }
+
+  viewer.hidden = false;
+  document.body.classList.add("modal-open");
+}
+
+function closeResourceInSite() {
+  const viewer = document.querySelector("#resource-viewer");
+  const iframe = document.querySelector("#resource-viewer-iframe");
+  viewer.hidden = true;
+  iframe.src = "";
+  iframe.srcdoc = "";
+  document.body.classList.remove("modal-open");
+}
+
+function openResearch(engine, query) {
+  const searchTermValue = (query || document.querySelector("#research-query").value || "health science study").trim();
+  const urls = {
+    wikipedia: `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(searchTermValue)}`,
+    google: `https://www.google.com/search?q=${encodeURIComponent(searchTermValue)}`,
+    bing: `https://www.bing.com/search?q=${encodeURIComponent(searchTermValue)}`
+  };
+  if (urls[engine]) {
+    window.open(urls[engine], "_blank", "noopener,noreferrer");
+  }
+}
+
 function toggleSaved(resourceId) {
   if (saved.has(resourceId)) { saved.delete(resourceId); showToast("Removed from your review deck."); }
   else { saved.add(resourceId); showToast("Saved to your review deck."); }
@@ -195,8 +271,8 @@ function toggleSaved(resourceId) {
 
 function openSource(resourceId) {
   const resource = findResource(resourceId);
-  if (!resource || resource.custom) return;
-  window.open(getSourceUrl(resource.source), "_blank", "noopener,noreferrer");
+  if (!resource) return;
+  openResourceInSite(resourceId);
 }
 
 function renderAdminGate() {
@@ -224,7 +300,7 @@ async function hashAdminPin(pin) {
 }
 
 function openContact() {
-  const contact = readStore(storageKeys.contact, { email: "", phone: "" });
+  const contact = getStoredContact();
   const modal = document.querySelector("#contact-modal");
   const form = document.querySelector("#contact-form");
   form.elements.email.value = contact.email || "";
@@ -240,11 +316,13 @@ function updateContactLinks(contact) {
   const whatsapp = document.querySelector("#whatsapp-link");
   const email = document.querySelector("#email-link");
   const phoneDigits = (contact.phone || "").replace(/\D/g, "");
-  whatsapp.hidden = phoneDigits.length < 7;
-  whatsapp.href = phoneDigits.length >= 7 ? `https://wa.me/${phoneDigits}` : "#";
+  const normalizedWhatsApp = phoneDigits.startsWith("0") ? `256${phoneDigits.slice(1)}` : phoneDigits;
+  whatsapp.hidden = normalizedWhatsApp.length < 9;
+  whatsapp.href = normalizedWhatsApp.length >= 9 ? `https://wa.me/${normalizedWhatsApp}` : "#";
   email.hidden = !contact.email;
   email.href = contact.email ? `mailto:${encodeURIComponent(contact.email)}` : "mailto:";
-  email.textContent = contact.email ? `Write to ${contact.email}` : "";
+  email.textContent = contact.email ? `Email ${contact.email}` : "";
+  if (!contact.email) email.setAttribute("aria-label", "Send email");
 }
 
 function closeContact() {
@@ -265,6 +343,8 @@ function handleClick(event) {
   if (markButton) { const id = markButton.dataset.markComplete; completed.has(id) ? completed.delete(id) : completed.add(id); updateCounts(); renderFeatured(); renderLibrary(); renderReader(findResource(id)); showToast(completed.has(id) ? "Nice work. Topic marked complete." : "Completion status updated."); return; }
   const sourceButton = event.target.closest("[data-open-source]");
   if (sourceButton) { openSource(sourceButton.dataset.openSource); return; }
+  const portalButton = event.target.closest("[data-open-resource-portal]");
+  if (portalButton) { event.stopPropagation(); openResourceInSite(portalButton.dataset.openResourcePortal); return; }
   const card = event.target.closest("[data-open-resource]");
   if (card) { const resource = findResource(card.dataset.openResource); if (resource) renderReader(resource); return; }
   const scrollButton = event.target.closest("[data-scroll-to]");
@@ -300,15 +380,48 @@ document.querySelector("#contact-open").addEventListener("click", openContact);
 document.querySelector("#mobile-contact").addEventListener("click", openContact);
 document.querySelector("#mobile-menu").addEventListener("click", () => document.querySelector("#sidebar").classList.toggle("is-open"));
 document.querySelector("#contact-modal").addEventListener("click", (event) => { if (event.target.id === "contact-modal") closeContact(); });
+document.querySelector("#research-search-button").addEventListener("click", () => openResearch("google", document.querySelector("#research-query").value));
+document.querySelectorAll("[data-research]").forEach((button) => button.addEventListener("click", () => openResearch(button.dataset.research)));
+
+document.querySelectorAll("[data-timer-action]").forEach((button) => {
+  button.addEventListener("click", () => {
+    if (button.dataset.timerAction === "start") {
+      if (studyTimerId) return;
+      studyTimerId = setInterval(() => {
+        if (studySessionSeconds <= 0) {
+          clearInterval(studyTimerId);
+          studyTimerId = null;
+          showToast("Focus session complete. Take a short break.");
+          return;
+        }
+        studySessionSeconds -= 1;
+        const minutes = String(Math.floor(studySessionSeconds / 60)).padStart(2, "0");
+        const seconds = String(studySessionSeconds % 60).padStart(2, "0");
+        document.querySelector("#study-timer").textContent = `${minutes}:${seconds}`;
+      }, 1000);
+      showToast("Study timer started.");
+      return;
+    }
+
+    clearInterval(studyTimerId);
+    studyTimerId = null;
+    studySessionSeconds = 25 * 60;
+    document.querySelector("#study-timer").textContent = "25:00";
+    showToast("Study timer reset.");
+  });
+});
 document.querySelector("#contact-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const data = new FormData(event.currentTarget);
-  const contact = { email: String(data.get("email")).trim(), phone: String(data.get("phone")).trim() };
+  const contact = { email: String(data.get("email")).trim() || contactDefaults.email, phone: String(data.get("phone")).trim() || contactDefaults.phone };
   localStorage.setItem(storageKeys.contact, JSON.stringify(contact));
   updateContactLinks(contact);
   document.querySelector("#contact-saved").hidden = false;
   showToast("Contact details saved on this device.");
 });
+
+document.querySelector("#resource-viewer").addEventListener("click", (event) => { if (event.target.id === "resource-viewer") closeResourceInSite(); });
+document.querySelectorAll("[data-close-resource-viewer]").forEach((button) => button.addEventListener("click", closeResourceInSite));
 
 document.querySelector("#admin-access-form").addEventListener("submit", async (event) => {
   event.preventDefault();
