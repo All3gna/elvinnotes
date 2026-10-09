@@ -3,93 +3,140 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f5f4ef" />
-    <meta name="description" content="A clear, interactive study library for health-science students. Understand deeply. Learn for life." />
-    <title>Elvin School — Understand deeply. Learn for life.</title>
+    <meta name="theme-color" content="#0a0d14" />
+    <meta name="description" content="Elvin School — HackTheBox-styled cyber study library & research portal for health-science students." />
+    <title>Elvin School — HackTheBox Cyber Study Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="custom.css" />
     <link rel="stylesheet" href="admin.css" />
     <link rel="stylesheet" href="hero.css" />
-    <script src="app.js?v=20261009-slides" defer></script>
+    <script src="app.js?v=20261009-htb-v2" defer></script>
   </head>
-  <body>
+  <body class="htb-theme">
+    <!-- Matrix Particle Canvas Background -->
+    <canvas id="cyber-canvas" class="cyber-canvas"></canvas>
+
     <div class="app-shell">
       <aside class="sidebar" id="sidebar" aria-label="Main navigation">
         <a class="brand" href="#home" data-view="home" aria-label="Elvin School home">
           <span class="brand-mark brand-mark-photo"><img src="background.jpeg" alt="Elvin profile" /></span>
-          <span class="brand-copy"><strong>elvin school</strong><small>LEARNING, MADE CLEAR</small></span>
+          <span class="brand-copy">
+            <strong>elvin school<span class="htb-badge-dot"></span></strong>
+            <small class="cyber-text-glow">SYSTEM // VER 2.5 HTB</small>
+          </span>
         </a>
 
-        <div class="sidebar-label">WORKSPACE</div>
+        <div class="sidebar-cyber-card">
+          <div class="cyber-card-header">
+            <span class="htb-status-tag"><span class="pulse-dot"></span> OPERATIONAL</span>
+            <span class="cyber-rank-title">RANK: ELITE</span>
+          </div>
+          <div class="cyber-xp-bar"><div class="cyber-xp-fill" id="sidebar-xp-fill" style="width: 78%;"></div></div>
+          <div class="cyber-xp-text"><span>XP: <strong id="sidebar-xp-val">2,450</strong>/3,000</span><span class="cyber-green-accent">LVL 08</span></div>
+        </div>
+
+        <div class="sidebar-label">WORKSPACE CONTROLS</div>
         <nav class="primary-nav">
           <button class="nav-item is-active" data-view="home"><span class="nav-icon">⌂</span>Overview<span class="nav-shortcut">01</span></button>
-          <button class="nav-item" data-view="library"><span class="nav-icon">▤</span>Study library<span class="nav-count" id="nav-count">15</span></button>
+          <button class="nav-item" data-view="library"><span class="nav-icon">▤</span>Study library<span class="nav-count" id="nav-count">17</span></button>
           <button class="nav-item" data-view="review"><span class="nav-icon">◈</span>Review deck<span class="nav-count" id="saved-count">0</span></button>
-          <button class="nav-item" data-view="admin"><span class="nav-icon">⌑</span>Admin workspace<span class="nav-shortcut">LOCKED</span></button>
+          <button class="nav-item" data-view="admin"><span class="nav-icon">⌑</span>Admin workspace<span class="nav-shortcut cyber-key">PIN</span></button>
         </nav>
 
-        <div class="sidebar-heading"><span>YOUR SUBJECTS</span><button id="show-all-subjects" aria-label="Show all subjects" title="Show all subjects">View</button></div>
+        <div class="sidebar-heading"><span>SUBJECT MODULES</span><button id="show-all-subjects" aria-label="Show all subjects" title="Show all subjects">ALL</button></div>
         <nav class="subject-nav" id="subject-nav"></nav>
 
         <div class="sidebar-spacer"></div>
-        <div class="sidebar-note"><span class="sparkle">✳</span><p>Small steps make<br />strong understanding.</p><div class="note-line"><span></span><span>KEEP GOING</span><span></span></div></div>
+
+        <div class="cyber-hud-widget">
+          <div class="hud-widget-title"><span class="sparkle">⚡</span> CYBER MATRIX HUD</div>
+          <div class="hud-widget-controls">
+            <button class="hud-btn" id="cyber-matrix-toggle" title="Toggle Matrix Grid Animation">Matrix: ON</button>
+            <button class="hud-btn" id="sound-toggle" title="Toggle Cyber Audio Effects">🔊 Audio: ON</button>
+          </div>
+        </div>
+
         <button class="profile-button" id="profile-button">
-          <span class="profile-avatar"><img src="photo.jpeg" alt="Elvin profile" /></span><span class="profile-copy"><strong>Elvin</strong><small>Your learning space</small></span><span class="profile-menu">···</span>
+          <span class="profile-avatar"><img src="photo.jpeg" alt="Elvin profile" /></span>
+          <span class="profile-copy"><strong>Elvin Otinga</strong><small>Physiotherapy & Cyber Sci</small></span>
+          <span class="profile-menu">···</span>
         </button>
       </aside>
 
       <main class="main-area">
         <header class="topbar">
           <button class="icon-button mobile-menu" id="mobile-menu" aria-label="Open navigation">☰</button>
-          <div class="breadcrumbs"><span>Elvin School</span><span class="breadcrumb-slash">/</span><span id="breadcrumb-current">Overview</span></div>
+          <div class="breadcrumbs">
+            <span class="cyber-tag-brand">HTB://ELVIN.SCHOOL</span>
+            <span class="breadcrumb-slash">/</span>
+            <span id="breadcrumb-current">Overview</span>
+          </div>
           <div class="topbar-actions">
-            <label class="search-box" for="global-search"><span class="search-icon">⌕</span><input id="global-search" type="search" placeholder="Find a topic..." autocomplete="off" /><kbd>⌘ K</kbd></label>
+            <label class="search-box" for="global-search">
+              <span class="search-icon">⌕</span>
+              <input id="global-search" type="search" placeholder="Search slides, notes, pdfs..." autocomplete="off" />
+              <kbd>⌘ K</kbd>
+            </label>
             <button class="icon-button top-contact" id="contact-open" aria-label="Open contact details" title="Contact Elvin School">✆</button>
           </div>
         </header>
 
         <section class="view is-visible" id="home-view" aria-label="Overview">
           <div class="content-wrap">
-            <div class="welcome-line"><span class="eyebrow"><span class="status-dot"></span> YOUR PERSONAL STUDY SPACE</span><span class="date-stamp" id="today-label"></span></div>
-            <div class="hero">
+            <div class="welcome-line">
+              <span class="eyebrow"><span class="status-dot"></span> SYSTEM ONLINE // ACTIVE LEARNING MODE</span>
+              <span class="date-stamp" id="today-label"></span>
+            </div>
+
+            <div class="hero htb-hero-cyber">
               <div class="hero-copy">
-                <div class="hero-overline">A BETTER WAY TO MAKE IT STICK</div>
-                <h1>Understand deeply.<br /><span>Learn for life.</span></h1>
-                <p>Good learning starts with a clear next step.<br class="desktop-break" /> Find your topic, make sense of it, and keep moving.</p>
-                <button class="button button-dark" data-view="library">Explore the library</button>
-                <div class="hero-footnote"><span class="tiny-star">✳</span> BUILT FOR CURIOUS HEALTH-SCIENCE MINDS</div>
+                <div class="hero-overline">[CYBER DECK 01] :: UNDERSTAND DEEPLY</div>
+                <h1>HACK YOUR BRAIN.<br /><span class="cyber-glow-green">LEARN FOR LIFE.</span></h1>
+                <p>High-powered study deck for medical & health-sciences. Access lecture slides, PDF textbooks, MS Office projects, and interactive quick-tests in one instant interface.</p>
+                <div class="hero-cta-group">
+                  <button class="button button-dark htb-btn-primary" data-view="library">⚡ Explore Study Library</button>
+                  <button class="button button-outline htb-btn-secondary" data-view="admin">🔒 Admin & OneDrive Workspace</button>
+                </div>
+                <div class="hero-footnote"><span class="tiny-star">✳</span> INSTANT ONLINE VIEWING VIA _BLANK & IN-APP PREVIEWS</div>
               </div>
-              <div class="hero-art" aria-label="Elvin School learning map">
+              <div class="hero-art htb-hero-art" aria-label="Elvin School learning map">
                 <img class="hero-art-photo" src="photo.jpeg" alt="" />
                 <div class="hero-visual-scene" aria-hidden="true">
-                  <div class="visual-topline"><span>ELVIN SCHOOL / LEARNING MAP</span><i>ES.01</i></div>
-                  <div class="orbit-scene"><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="orbit orbit-three"></span><span class="orbit-center">e<span>.</span></span><span class="orbit-tag tag-bio">BIOCHEMISTRY</span><span class="orbit-tag tag-clinical">CLINICAL SCIENCES</span></div>
+                  <div class="visual-topline"><span>ELVIN SCHOOL // CYBER HUD</span><i>SYS.01</i></div>
+                  <div class="orbit-scene">
+                    <span class="orbit orbit-one"></span>
+                    <span class="orbit orbit-two"></span>
+                    <span class="orbit orbit-three"></span>
+                    <span class="orbit-center">HTB<span>.</span></span>
+                    <span class="orbit-tag tag-bio">BIOCHEMISTRY</span>
+                    <span class="orbit-tag tag-clinical">CLINICAL SCIENCES</span>
+                  </div>
                 </div>
-                <div class="art-label"><span class="art-label-dot"></span> A PLACE TO FIGURE IT OUT</div>
+                <div class="art-label"><span class="art-label-dot"></span> SYSTEM HEALTH: 100%</div>
                 <div class="art-caption">Elvinton<br />Otinga.</div>
-                <span class="art-index">NTONVILE</span>
+                <span class="art-index">NTONVILLE</span>
               </div>
               <span class="hero-decoration" aria-hidden="true">✳</span>
             </div>
 
-            <div class="stats-row">
-              <div class="stat"><span class="stat-icon coral">▤</span><span><strong id="stat-notes">15</strong><small>study resources</small></span></div>
-              <div class="stat"><span class="stat-icon aqua">◉</span><span><strong>03</strong><small>subject areas</small></span></div>
-              <div class="stat"><span class="stat-icon yellow">✳</span><span><strong id="stat-progress">0%</strong><small>your progress</small></span></div>
-              <button class="stat stat-action" data-view="review"><span class="stat-icon green">♧</span><span><strong id="stat-saved">0 saved</strong><small>ready for review</small></span><span class="stat-arrow">Open</span></button>
+            <div class="stats-row htb-stats-row">
+              <div class="stat"><span class="stat-icon coral">▤</span><span><strong id="stat-notes">17</strong><small>Active Resources</small></span></div>
+              <div class="stat"><span class="stat-icon aqua">◉</span><span><strong>03</strong><small>Subject Disciplines</small></span></div>
+              <div class="stat"><span class="stat-icon yellow">✳</span><span><strong id="stat-progress">0%</strong><small>Mastery Progress</small></span></div>
+              <button class="stat stat-action" data-view="review"><span class="stat-icon green">♧</span><span><strong id="stat-saved">0 saved</strong><small>Review Deck Ready</small></span><span class="stat-arrow">LAUNCH →</span></button>
             </div>
 
-            <section class="about-spotlight">
+            <section class="about-spotlight htb-spotlight">
               <div class="about-spotlight-copy">
-                <span class="section-kicker">ABOUT ME</span>
-                <h2>Physiotherapist, Stoic and smarter learning with clarity.</h2>
-                <p>I'm Elvinton Otinga, a health-sciences student in the field of physiotherapy, building a focused learning space where difficult ideas become clear, practical, and easier to remember. This is where handwritten understanding meets structured revision, physiotherapy references, and strong study routines.</p>
+                <span class="section-kicker">PROFILE // OPERATOR</span>
+                <h2>Physiotherapist, Stoic & High-Speed Learning Engineer.</h2>
+                <p>I'm Elvinton Otinga, a physiotherapy student building a high-tech knowledge terminal. Here, complex medical pathways, anatomy, and clinical concepts transform into structured, instant-view slides, notes, and digital cards.</p>
                 <div class="about-spotlight-actions">
-                  <button class="button button-dark" data-view="library">Browse notes</button>
-                  <button class="button button-outline" id="about-contact">Contact me</button>
+                  <button class="button button-dark" data-view="library">Browse All Notes</button>
+                  <button class="button button-outline" id="about-contact">Connect via WhatsApp / Email</button>
                 </div>
               </div>
               <div class="about-spotlight-photo">
@@ -98,49 +145,59 @@
             </section>
 
             <section class="section-block recent-section">
-              <div class="section-heading"><div><span class="section-kicker">A GOOD PLACE TO START</span><h2>Pick up an idea.</h2></div><button class="text-link" data-view="library">All study resources</button></div>
+              <div class="section-heading">
+                <div><span class="section-kicker">FEATURED TARGET MODULES</span><h2>Pick up an idea.</h2></div>
+                <button class="text-link" data-view="library">All study resources →</button>
+              </div>
               <div class="resource-grid" id="featured-grid"></div>
             </section>
 
-            <section class="quote-strip"><span class="quote-mark">“</span><p>Make the complicated feel possible.</p><span class="quote-credit">THE ELVIN SCHOOL PROMISE <i></i></span></section>
+            <section class="quote-strip htb-quote-strip">
+              <span class="quote-mark">“</span>
+              <p>Break down the complex. Master the fundamentals. Execute with precision.</p>
+              <span class="quote-credit">ELVIN SCHOOL CYBER PROMISE <i></i></span>
+            </section>
 
             <section class="section-block subject-section">
-              <div class="section-heading"><div><span class="section-kicker">YOUR LEARNING, AT A GLANCE</span><h2>Explore by subject.</h2></div><span class="section-aside">Follow a thread, find the connections.</span></div>
+              <div class="section-heading">
+                <div><span class="section-kicker">MODULE CLASSIFICATIONS</span><h2>Explore by Subject Discipline.</h2></div>
+                <span class="section-aside">Follow the thread, unlock the connections.</span>
+              </div>
               <div class="subject-tiles" id="subject-tiles"></div>
             </section>
 
-            <section class="portal-showcase" aria-label="Study portal and research dashboard">
+            <section class="portal-showcase htb-portal-showcase" aria-label="Study portal and research dashboard">
               <div class="portal-header">
                 <div>
-                  <span class="section-kicker">INSTANT ACCESS</span>
-                  <h2>Open notes, slides and references without leaving your study flow.</h2>
+                  <span class="section-kicker">INSTANT ACCESS & ONLINE READ</span>
+                  <h2>Open notes, slides & textbooks directly in browser tabs via _blank.</h2>
                 </div>
-                <button class="button button-dark" data-view="library">Open library</button>
+                <button class="button button-dark" data-view="library">Open Library Deck</button>
               </div>
               <div class="portal-layout">
                 <div class="portal-main">
                   <div class="portal-grid" id="portal-grid"></div>
                 </div>
                 <aside class="portal-side">
-                  <div class="timer-panel">
-                    <span class="section-kicker">FOCUS TIMER</span>
+                  <div class="timer-panel htb-hud-box">
+                    <span class="section-kicker">CYBER FOCUS TIMER</span>
                     <div class="timer-display"><span id="study-timer">25:00</span></div>
                     <div class="timer-controls">
-                      <button class="button button-dark" data-timer-action="start" type="button">Start</button>
+                      <button class="button button-dark" data-timer-action="start" type="button">Start Session</button>
                       <button class="button button-outline" data-timer-action="reset" type="button">Reset</button>
                     </div>
                   </div>
-                  <div class="research-panel">
-                    <span class="section-kicker">FURTHER RESEARCH</span>
+                  <div class="research-panel htb-hud-box">
+                    <span class="section-kicker">RESEARCH MATRIX</span>
                     <div class="research-links">
                       <button class="research-link" data-research="wikipedia" type="button">Wikipedia</button>
                       <button class="research-link" data-research="google" type="button">Google</button>
                       <button class="research-link" data-research="bing" type="button">Bing</button>
                     </div>
-                    <label class="research-search" for="research-query">Quick search
-                      <input id="research-query" type="text" placeholder="Search your topic" />
+                    <label class="research-search" for="research-query">Quick Medical / Sci Search
+                      <input id="research-query" type="text" placeholder="Search topic..." />
                     </label>
-                    <button class="button button-dark" id="research-search-button" type="button">Search</button>
+                    <button class="button button-dark" id="research-search-button" type="button">Search Web</button>
                   </div>
                 </aside>
               </div>
@@ -149,59 +206,91 @@
             <section class="learning-roadmap" aria-label="Learning roadmap">
               <div class="roadmap-header">
                 <div>
-                  <span class="section-kicker">YOUR LEARNING PATH</span>
-                  <h2>Build momentum from foundation to application.</h2>
+                  <span class="section-kicker">MASTERY ROADMAP</span>
+                  <h2>Build momentum from core theory to clinical execution.</h2>
                 </div>
               </div>
               <div class="roadmap-grid">
                 <article class="roadmap-card roadmap-card-primary">
-                  <span>FOUNDATIONS</span>
-                  <h3>Understand the core concepts.</h3>
-                  <p>Break the subject into small ideas, then build a clear mental map before moving deeper.</p>
+                  <span>PHASE 01 // FOUNDATIONS</span>
+                  <h3>Deconstruct the core theory.</h3>
+                  <p>Parse complex biochemical pathways and anatomical systems into clear mental blueprints.</p>
                 </article>
                 <article class="roadmap-card">
-                  <span>APPLY</span>
-                  <h3>Use the knowledge.</h3>
-                  <p>Relate each topic to a case, pathway, concept, or clinical context to make it memorable.</p>
+                  <span>PHASE 02 // CLINICAL SYNTHESIS</span>
+                  <h3>Apply to real-world cases.</h3>
+                  <p>Relate each mechanism to physiotherapy assessment, patient movement, and diagnostic imaging.</p>
                 </article>
                 <article class="roadmap-card">
-                  <span>REINFORCE</span>
-                  <h3>Review and repeat.</h3>
-                  <p>Use quick tests, flashcards, and saved topics to lock in the understanding over time.</p>
+                  <span>PHASE 03 // MEMORY RETENTION</span>
+                  <h3>Automate recall with review deck.</h3>
+                  <p>Utilize embedded quick-tests, interactive cards, and streak meters to lock in knowledge.</p>
                 </article>
               </div>
             </section>
 
-            <section class="insight-strip" aria-label="Study insights and momentum">
-              <div class="insight-chip"><strong>Daily streak</strong><span>7 days strong</span></div>
-              <div class="insight-chip"><strong>Focus time</strong><span>1h 45m</span></div>
-              <div class="insight-chip"><strong>Weakest link</strong><span>Metabolic pathways</span></div>
-              <div class="insight-chip"><strong>Next win</strong><span>Biochemistry review</span></div>
+            <section class="insight-strip htb-insight-strip" aria-label="Study insights and momentum">
+              <div class="insight-chip"><strong>Streak</strong><span>7 Days Active</span></div>
+              <div class="insight-chip"><strong>Focus Time</strong><span>2h 15m Today</span></div>
+              <div class="insight-chip"><strong>Target Focus</strong><span>Biochemistry Pathways</span></div>
+              <div class="insight-chip"><strong>Status</strong><span>OneDrive Sync Ready</span></div>
             </section>
 
-            <footer class="site-footer"><a class="footer-brand" href="#home" data-view="home">elvin<span>.</span></a><span>Understand deeply. Learn for life.</span><button id="about-open">A little about us</button></footer>
+            <footer class="site-footer">
+              <a class="footer-brand" href="#home" data-view="home">elvin<span>.</span>school</a>
+              <span>Understand deeply. Learn for life.</span>
+              <button id="about-open">About Elvin School</button>
+            </footer>
           </div>
         </section>
 
         <section class="view" id="library-view" aria-label="Study library">
           <div class="content-wrap">
-            <div class="page-intro"><span class="section-kicker">YOUR LEARNING, ORGANIZED</span><h1>A library of <span>good ideas.</span></h1><p>Find a topic. Follow your curiosity. Make it make sense.</p></div>
-            <div class="library-toolbar"><div class="filter-tabs" id="filter-tabs" role="group" aria-label="Filter resources"></div><span class="results-count" id="results-count"></span></div>
+            <div class="page-intro">
+              <span class="section-kicker">STUDY TERMINAL // LIBRARY</span>
+              <h1>Knowledge <span>Deck & Slides.</span></h1>
+              <p>Instant view, inline previews, and direct _blank tab reading for slides (.pptx), textbooks (.pdf), and MS Office projects.</p>
+            </div>
+            <div class="library-toolbar">
+              <div class="filter-tabs" id="filter-tabs" role="group" aria-label="Filter resources"></div>
+              <div class="filter-type-group" id="filter-type-group">
+                <button class="type-btn is-active" data-type-filter="all">All Format</button>
+                <button class="type-btn" data-type-filter="slides">PPTX Slides</button>
+                <button class="type-btn" data-type-filter="pdf">PDF Books</button>
+                <button class="type-btn" data-type-filter="office">MS Office / Custom</button>
+              </div>
+              <span class="results-count" id="results-count">17 RESOURCES</span>
+            </div>
             <div class="library-grid resource-grid" id="library-grid"></div>
-            <div class="empty-state" id="empty-state" hidden><span>⌕</span><strong>No topics found</strong><p>Try a different search or subject.</p><button class="text-link" id="clear-search">Clear search</button></div>
+            <div class="empty-state" id="empty-state" hidden>
+              <span>⌕</span>
+              <strong>No topics found matching filter</strong>
+              <p>Try resetting your search query or subject category.</p>
+              <button class="text-link" id="clear-search">Clear filter</button>
+            </div>
           </div>
         </section>
 
         <section class="view" id="reader-view" aria-label="Study note reader">
           <div class="reader-wrap">
-            <div class="reader-topline"><button class="back-link" data-view="library">← All resources</button><span class="reader-source" id="reader-source"></span></div>
-            <div class="reader-layout"><article class="reader-article" id="reader-article"></article><aside class="reader-rail" id="reader-rail"></aside></div>
+            <div class="reader-topline">
+              <button class="back-link" data-view="library">← Back to Library Deck</button>
+              <span class="reader-source" id="reader-source"></span>
+            </div>
+            <div class="reader-layout">
+              <article class="reader-article" id="reader-article"></article>
+              <aside class="reader-rail" id="reader-rail"></aside>
+            </div>
           </div>
         </section>
 
         <section class="view" id="review-view" aria-label="Study review deck">
           <div class="content-wrap">
-            <div class="page-intro"><span class="section-kicker">A LITTLE PRACTICE GOES A LONG WAY</span><h1>Your <span>review deck.</span></h1><p>Saved topics and quick questions, all in one place.</p></div>
+            <div class="page-intro">
+              <span class="section-kicker">ACTIVE RECALL // REVIEW DECK</span>
+              <h1>Your <span>Saved Targets.</span></h1>
+              <p>High-yield review deck for fast repetition and revision.</p>
+            </div>
             <div id="review-content"></div>
           </div>
         </section>
@@ -209,32 +298,108 @@
         <section class="view" id="admin-view" aria-label="Admin workspace">
           <div class="content-wrap admin-wrap">
             <section class="admin-gate" id="admin-gate">
-              <span class="section-kicker">PRIVATE WORKSPACE</span>
-              <h1 id="admin-gate-title">Admin <span>access.</span></h1>
-              <p id="admin-gate-copy">Set a PIN to open the editor on this browser. This local gate is not server authentication; it does not protect content from someone with browser developer tools.</p>
+              <span class="section-kicker">AUTHENTICATION GATE</span>
+              <h1 id="admin-gate-title">Admin <span>Terminal.</span></h1>
+              <p id="admin-gate-copy">Enter your Security PIN to unlock the project editor, public/private workspace publisher, MS Office document uploads, and instant OneDrive backup manager.</p>
               <form id="admin-access-form" class="admin-form admin-access-form">
-                <label for="admin-pin">Admin PIN <small id="admin-pin-hint">Use at least 6 characters.</small></label>
-                <input id="admin-pin" name="pin" type="password" minlength="6" autocomplete="current-password" required />
-                <button class="button button-dark" id="admin-access-submit" type="submit">Set admin PIN</button>
+                <label for="admin-pin">Admin Terminal PIN <small id="admin-pin-hint">Enter your 6+ digit PIN.</small></label>
+                <input id="admin-pin" name="pin" type="password" minlength="6" autocomplete="current-password" required placeholder="••••••••" />
+                <button class="button button-dark htb-btn-primary" id="admin-access-submit" type="submit">Unlock Admin Workspace</button>
                 <p class="admin-status" id="admin-access-status" role="status"></p>
               </form>
             </section>
+
             <div id="admin-workspace" hidden>
-              <div class="page-intro admin-intro"><span class="section-kicker">PRIVATE WORKSPACE</span><h1>Build your <span>study library.</span></h1><p>Create notes and sections here. They are saved in this browser only and are not published to other visitors.</p><button class="button button-outline admin-lock" id="admin-lock" type="button">Lock workspace</button></div>
+              <div class="page-intro admin-intro">
+                <span class="section-kicker">AUTHORIZED ADMINISTRATOR</span>
+                <h1>Admin & OneDrive <span>Workspace.</span></h1>
+                <p>Upload MS Office projects (.pptx, .docx), PDF notes, or text slides. Publish to your <strong>Public Study Library</strong> for all visitors or store in your <strong>Private Workspace</strong> with instant OneDrive cloud sync.</p>
+                <button class="button button-outline admin-lock" id="admin-lock" type="button">🔒 Lock Workspace</button>
+              </div>
+
+              <!-- OneDrive Cloud Backup Manager -->
+              <section class="onedrive-panel htb-hud-box" id="admin-onedrive-panel">
+                <div class="onedrive-header">
+                  <div>
+                    <span class="section-kicker">CLOUD INTEGRATION</span>
+                    <h2>☁️ Microsoft OneDrive Instant Backup</h2>
+                  </div>
+                  <div class="onedrive-status-badge" id="onedrive-status-badge">
+                    <span class="pulse-dot"></span> <span id="onedrive-status-text">OneDrive Sync Ready</span>
+                  </div>
+                </div>
+                <p class="onedrive-desc">Back up your study library, MS Office attachments (.pptx, .docx), and notes directly to your personal Microsoft OneDrive storage.</p>
+                
+                <div class="onedrive-controls">
+                  <div class="onedrive-config-group">
+                    <label for="onedrive-client-id">MS Graph Client ID / Token <small>(Optional for custom App ID)</small></label>
+                    <input id="onedrive-client-id" type="text" placeholder="Paste Client ID or OAuth Access Token" />
+                  </div>
+                  <div class="onedrive-btn-group">
+                    <button class="button button-dark htb-btn-primary" id="onedrive-backup-now" type="button">☁️ Backup Library to OneDrive</button>
+                    <button class="button button-outline" id="onedrive-download-json" type="button">💾 Export Backup (.json)</button>
+                    <label class="button button-outline auto-sync-label">
+                      <input type="checkbox" id="onedrive-auto-sync" checked /> Auto-sync on upload
+                    </label>
+                  </div>
+                </div>
+                <div class="onedrive-log" id="onedrive-log" role="log" aria-live="polite">System ready. Instant backup available.</div>
+              </section>
+
               <div class="admin-layout">
                 <form id="admin-note-form" class="admin-form admin-note-form">
-                  <span class="section-kicker">NEW LIBRARY ENTRY</span>
-                  <h2>Add a note or section.</h2>
-                  <label for="admin-note-title">Title<input id="admin-note-title" name="title" maxlength="100" required /></label>
-                  <label for="admin-note-subject">Subject<select id="admin-note-subject" name="subject" required></select></label>
-                  <label for="admin-note-description">Short introduction<input id="admin-note-description" name="description" maxlength="220" required /></label>
-                  <label for="admin-note-body">Notes and sections <small>Separate sections with a blank line.</small><textarea id="admin-note-body" name="body" rows="10" required></textarea></label>
-                  <button class="button button-dark" type="submit">Add to study library</button>
+                  <span class="section-kicker">ADD PROJECT / SLIDES / NOTES</span>
+                  <h2>Upload or Create Entry.</h2>
+
+                  <div class="workspace-toggle-box">
+                    <label>Workspace Target:</label>
+                    <div class="toggle-options">
+                      <label class="toggle-option">
+                        <input type="radio" name="workspaceVisibility" value="public" checked />
+                        <span>Public Library (Visible to all visitors online)</span>
+                      </label>
+                      <label class="toggle-option">
+                        <input type="radio" name="workspaceVisibility" value="private" />
+                        <span>Private Workspace (Admin local view only)</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <label for="admin-note-title">Title / Project Name
+                    <input id="admin-note-title" name="title" maxlength="120" required placeholder="e.g. Neuroanatomy Lecture Notes & Slides" />
+                  </label>
+
+                  <label for="admin-note-subject">Subject Discipline
+                    <select id="admin-note-subject" name="subject" required></select>
+                  </label>
+
+                  <!-- MS Office File Upload Dropzone -->
+                  <div class="file-upload-zone" id="admin-dropzone">
+                    <span class="file-upload-icon">📁</span>
+                    <div class="file-upload-copy">
+                      <strong>Attach MS Office or PDF File (.pptx, .docx, .pdf)</strong>
+                      <small>Drag & drop or click to upload project slides or notes</small>
+                    </div>
+                    <input type="file" id="admin-file-input" accept=".pptx,.docx,.doc,.pdf,.xlsx,.txt" />
+                    <div class="file-preview-name" id="file-preview-name" hidden></div>
+                  </div>
+
+                  <label for="admin-note-description">Short Overview / Description
+                    <input id="admin-note-description" name="description" maxlength="240" required placeholder="Quick summary of the project, slides, or textbook chapter" />
+                  </label>
+
+                  <label for="admin-note-body">Notes / Outline / Content Sections
+                    <small>Separate sections with blank lines.</small>
+                    <textarea id="admin-note-body" name="body" rows="8" placeholder="Enter key bullet points, main concepts, or outline..."></textarea>
+                  </label>
+
+                  <button class="button button-dark htb-btn-primary" type="submit">⚡ Save & Publish Entry</button>
                   <p class="admin-status" id="admin-note-status" role="status"></p>
                 </form>
+
                 <section class="admin-entries" aria-labelledby="admin-entries-title">
-                  <span class="section-kicker">YOUR ADDITIONS</span>
-                  <h2 id="admin-entries-title">Notes on this browser.</h2>
+                  <span class="section-kicker">MANAGED WORKSPACE ITEMS</span>
+                  <h2 id="admin-entries-title">Your Custom & Uploaded Projects.</h2>
                   <div id="admin-note-list"></div>
                 </section>
               </div>
@@ -244,37 +409,97 @@
 
         <section class="view" id="about-view" aria-label="About Elvin School">
           <div class="content-wrap about-wrap">
-            <span class="section-kicker">A SCHOOL OF ONE'S OWN</span><h1>Clarity changes<br /><span>everything.</span></h1>
-            <p class="about-lead">Elvin School is a growing learning space for health-science students: a place to meet a hard topic with patience, understand how its pieces fit, and leave with more confidence than you came in with.</p>
-            <div class="about-values"><article><span>01 / OUR MISSION</span><h2>Make room for understanding.</h2><p>Turn complex health-science subjects into clear, well-organized learning experiences students can actually use.</p></article><article><span>02 / OUR VISION</span><h2>Curiosity that goes further.</h2><p>Build a trusted learning community where foundational science and clinical thinking strengthen one another.</p></article><article><span>03 / OUR MOTTO</span><h2>Understand deeply.<br />Learn for life.</h2><p>Because knowing the why is what helps learning last.</p></article></div>
-            <div class="founder-block"><div class="founder-photo"><span>YOUR PHOTO<br />COMING SOON</span><i>✳</i></div><div><span class="section-kicker">THE PERSON BEHIND THE NOTES</span><h2>Made with purpose, by Elvin.</h2><p>This space is built around the belief that learning should feel clear, welcoming, and possible. A photo and a personal introduction can go here when you're ready.</p><button class="button button-outline" id="about-contact">Get in touch</button></div></div>
-            <footer class="site-footer"><a class="footer-brand" href="#home" data-view="home">elvin<span>.</span></a><span>Understand deeply. Learn for life.</span><button id="about-open-footer">A little about us</button></footer>
+            <span class="section-kicker">TERMINAL PHILOSOPHY</span>
+            <h1>Clarity & Precision<br /><span>In Health Sciences.</span></h1>
+            <p class="about-lead">Elvin School combines medical science rigor with cyber-aesthetic UI. Dedicated to physiotherapy, biochemistry, and clinical reasoning.</p>
+            <div class="about-values">
+              <article>
+                <span>01 // MISSION</span>
+                <h2>Make room for deep understanding.</h2>
+                <p>Convert dense medical literature into clean, instant-access slides and interactive cards.</p>
+              </article>
+              <article>
+                <span>02 // VISION</span>
+                <h2>Curiosity powered by technology.</h2>
+                <p>Build a trusted online hub where foundational science and clinical practice connect effortlessly.</p>
+              </article>
+              <article>
+                <span>03 // MOTTO</span>
+                <h2>Understand deeply.<br />Learn for life.</h2>
+                <p>Knowing the fundamental 'why' ensures understanding lasts forever.</p>
+              </article>
+            </div>
+            <div class="founder-block">
+              <div class="founder-photo">
+                <img src="photo.jpeg" alt="Elvin profile" style="width:100%;height:100%;object-fit:cover;" />
+              </div>
+              <div>
+                <span class="section-kicker">CREATOR & FOUNDER</span>
+                <h2>Created by Elvinton Otinga.</h2>
+                <p>Physiotherapy student and developer building tools for health-science students worldwide.</p>
+                <button class="button button-outline" id="about-contact">Get in touch via WhatsApp / Email</button>
+              </div>
+            </div>
+            <footer class="site-footer">
+              <a class="footer-brand" href="#home" data-view="home">elvin<span>.</span>school</a>
+              <span>Understand deeply. Learn for life.</span>
+              <button id="about-open-footer">About Elvin School</button>
+            </footer>
           </div>
         </section>
 
-        <div class="mobile-bottom"><button data-view="home"><span>⌂</span>Home</button><button data-view="library"><span>▤</span>Library</button><button data-view="review"><span>◈</span>Review</button><button id="mobile-contact">Contact</button></div>
+        <div class="mobile-bottom">
+          <button data-view="home"><span>⌂</span>Home</button>
+          <button data-view="library"><span>▤</span>Library</button>
+          <button data-view="review"><span>◈</span>Review</button>
+          <button id="mobile-contact">Contact</button>
+        </div>
       </main>
     </div>
 
-    <div class="modal-backdrop" id="contact-modal" hidden><section class="modal contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-title"><button class="modal-close" data-close-modal aria-label="Close">×</button><span class="section-kicker">LET'S STAY CONNECTED</span><h2 id="contact-title">Send a quick note<br /><span>and keep learning moving.</span></h2><p class="modal-hint">Tap to message on WhatsApp or email. The details stay saved on this browser and are ready whenever you need them.</p><form id="contact-form"><label>Your email<input name="email" type="email" placeholder="elvintonotinga@gmail.com" /></label><label>WhatsApp number <small>Digits only. We’ll format it for you.</small><input name="phone" type="tel" placeholder="0700305696" /></label><button class="button button-dark" type="submit">Save contact details</button></form><div class="contact-quick-actions"><a class="whatsapp-link" id="whatsapp-link" href="#" target="_blank" rel="noreferrer" aria-label="Open WhatsApp chat">WhatsApp</a><a class="email-link" id="email-link" href="mailto:" aria-label="Send email">Email</a></div><p class="contact-saved" id="contact-saved" hidden>Details saved on this device.</p></section></div>
+    <!-- Contact Modal -->
+    <div class="modal-backdrop" id="contact-modal" hidden>
+      <section class="modal contact-modal htb-modal" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+        <button class="modal-close" data-close-modal aria-label="Close">×</button>
+        <span class="section-kicker">CONNECT DIRECTLY</span>
+        <h2 id="contact-title">Message Elvin<br /><span class="cyber-glow-green">WhatsApp or Email.</span></h2>
+        <p class="modal-hint">Save your contact details below or start an instant chat.</p>
+        <form id="contact-form">
+          <label>Your Email<input name="email" type="email" placeholder="elvintonotinga@gmail.com" /></label>
+          <label>WhatsApp Number <small>Include country code or digits.</small><input name="phone" type="tel" placeholder="0700305696" /></label>
+          <button class="button button-dark htb-btn-primary" type="submit">Save Contact Info</button>
+        </form>
+        <div class="contact-quick-actions">
+          <a class="whatsapp-link" id="whatsapp-link" href="#" target="_blank" rel="noreferrer" aria-label="Open WhatsApp chat">📱 Open WhatsApp</a>
+          <a class="email-link" id="email-link" href="mailto:" aria-label="Send email">✉️ Send Email</a>
+        </div>
+        <p class="contact-saved" id="contact-saved" hidden>Details stored securely on this device.</p>
+      </section>
+    </div>
+
+    <!-- Resource Viewer Modal (In-App Preview & _blank trigger) -->
     <div class="resource-viewer-backdrop" id="resource-viewer" hidden>
-      <div class="resource-viewer" role="dialog" aria-modal="true" aria-labelledby="resource-viewer-title">
+      <div class="resource-viewer htb-viewer-modal" role="dialog" aria-modal="true" aria-labelledby="resource-viewer-title">
         <div class="resource-viewer-header">
           <div>
-            <span class="section-kicker">INSTANT PREVIEW</span>
-            <h3 id="resource-viewer-title">Study document</h3>
+            <span class="section-kicker">CYBER TERMINAL // INSTANT PREVIEW</span>
+            <h3 id="resource-viewer-title">Study Document Preview</h3>
           </div>
-          <button class="modal-close" data-close-resource-viewer aria-label="Close resource preview">×</button>
+          <div class="viewer-top-actions">
+            <a class="button button-outline htb-btn-accent" id="viewer-open-tab" href="#" target="_blank" rel="noopener noreferrer">⚡ Read in New Tab (_blank)</a>
+            <button class="modal-close" data-close-resource-viewer aria-label="Close resource preview">×</button>
+          </div>
         </div>
         <div class="resource-viewer-body">
           <iframe id="resource-viewer-iframe" title="Study document preview" loading="lazy"></iframe>
         </div>
         <div class="resource-viewer-footer">
-          <a class="button button-outline" id="viewer-download" href="#" target="_blank" rel="noreferrer">Download</a>
-          <button class="button button-dark" data-close-resource-viewer type="button">Close</button>
+          <a class="button button-outline" id="viewer-download" href="#" target="_blank" rel="noreferrer">💾 Download File</a>
+          <button class="button button-dark htb-btn-primary" data-close-resource-viewer type="button">Close Viewer</button>
         </div>
       </div>
     </div>
+
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </body>
 </html>
